@@ -25,8 +25,7 @@ public class PhoneIdentityDataCollector {
 		data.manufacturer = Build.MANUFACTURER;
 		data.model = Build.MODEL;
 		data.osType = "android";
-		data.osVersion = Build.VERSION.SDK_INT;        // The Android SDK level, e.g. 16
-		data.osVersionAndroid = Build.VERSION.RELEASE; // The Android version string, e.g. "4.1.1"
+		data.osVersion = Build.VERSION.SDK_INT;
 		return data;
 	}
 	

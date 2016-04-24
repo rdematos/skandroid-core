@@ -6,11 +6,12 @@ import android.util.Log;
 
 import com.samknows.libcore.SKLogger;
 import com.samknows.measurement.CachingStorage;
+import com.samknows.measurement.MainService;
 import com.samknows.measurement.SKApplication;
 import com.samknows.measurement.Storage;
 import com.samknows.measurement.statemachine.StateResponseCode;
-import com.samknows.measurement.statemachine.ScheduledTestExecutionQueue;
-import com.samknows.measurement.TestRunner.TestContext;
+import com.samknows.measurement.test.ScheduledTestExecutionQueue;
+import com.samknows.measurement.test.TestContext;
 import com.samknows.measurement.util.OtherUtils;
 
 public class ExecuteScheduledTestQueueState extends BaseState{

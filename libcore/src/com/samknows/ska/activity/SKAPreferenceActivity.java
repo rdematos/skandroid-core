@@ -33,6 +33,8 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
+import android.text.style.TypefaceSpan;
+import android.util.LruCache;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -223,14 +225,14 @@ public class SKAPreferenceActivity extends PreferenceActivity implements OnShare
 
 		String data_cap = preferences.getString(SKConstants.PREF_DATA_CAP, s_configDataCap);
 		Preference dataCapEditTextPreference;
-		dataCapEditTextPreference = findPreference(SKConstants.PREF_DATA_CAP);
+		dataCapEditTextPreference = (Preference) findPreference(SKConstants.PREF_DATA_CAP);
 		dataCapEditTextPreference.setTitle(getString(R.string.data_cap_title)+ " "+data_cap+getString(R.string.mb));
     sConvertPreferenceToUseCustomFont(dataCapEditTextPreference);
 
 
     Preference p;
 		int data_cap_day = preferences.getInt(SKConstants.PREF_DATA_CAP_RESET_DAY, 1);
-		p = findPreference(SKConstants.PREF_DATA_CAP_RESET_DAY);
+		p = (Preference) findPreference(SKConstants.PREF_DATA_CAP_RESET_DAY);
 		p.setTitle(getString(R.string.data_cap_day_title)+ TimeUtils.getDayOfMonthFrom1AsStringWithNoSuffix(data_cap_day));
     sConvertPreferenceToUseCustomFont(p);
 

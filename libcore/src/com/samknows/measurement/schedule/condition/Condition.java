@@ -9,7 +9,7 @@ import org.w3c.dom.Element;
 
 import com.samknows.libcore.SKLogger;
 import com.samknows.measurement.schedule.ScheduleConfig;
-import com.samknows.measurement.TestRunner.TestContext;
+import com.samknows.measurement.test.TestContext;
 import com.samknows.measurement.util.SimpleFuture;
 
 public abstract class Condition implements Serializable{
@@ -25,8 +25,7 @@ public abstract class Condition implements Serializable{
 	public abstract String getConditionStringForReportingFailedCondition();
 
 	public abstract ConditionResult doTestBefore(TestContext tc);
-	public ConditionResult doTestAfter(TestContext tc) {return new ConditionResult(true);}
-
+	public ConditionResult doTestAfter(TestContext tc) {return new ConditionResult(true);};
 	public void release(TestContext tc){}
 	protected abstract boolean needSeparateThread();
 	
@@ -36,9 +35,9 @@ public abstract class Condition implements Serializable{
 	 */
 	public Future<ConditionResult> testBefore(final TestContext ctx) {
 		if (!needSeparateThread()) {
-			return new SimpleFuture<>(doTestBefore(ctx));
+			return new SimpleFuture<ConditionResult>(doTestBefore(ctx));
 		} else {
-			return new FutureTask<>(new Callable<ConditionResult>() {
+			return new FutureTask<ConditionResult>(new Callable<ConditionResult>() {
 				@Override
 				public ConditionResult call() throws Exception {
 					return doTestBefore(ctx);

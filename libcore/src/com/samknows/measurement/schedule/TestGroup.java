@@ -29,7 +29,7 @@ public class TestGroup implements Serializable{
 	public static TestGroup parseXml(Element node){
 		TestGroup ret = new TestGroup();
 		ret.conditionGroupId = node.getAttribute(ScheduleConfig.CONDITION_GROUP_ID);
-		ret.times = new ArrayList<>();
+		ret.times = new ArrayList<TestTime>();
 		
 		//get the times the test group is supposed to run during the day
 		NodeList list = node.getElementsByTagName(ScheduleConfig.TIME);
@@ -49,7 +49,7 @@ public class TestGroup implements Serializable{
 		
 		
 		//get the list of test belonging to the test group
-		ret.testIds = new ArrayList<>();
+		ret.testIds = new ArrayList<SCHEDULE_TEST_ID>();
 		NodeList test_ids = node.getElementsByTagName(ScheduleConfig.TEST);
 		for(int i=0; i < test_ids.getLength(); i++){
 			Element ep = (Element) test_ids.item(i);
@@ -87,7 +87,7 @@ public class TestGroup implements Serializable{
 	
 	
 	public List<Long> getTimesInInterval(long startInterval, long endInterval){
-		List<Long> ret = new ArrayList<>();
+		List<Long> ret = new ArrayList<Long>();
 		long time = startInterval;
 		while(time <= endInterval){
 			for(TestTime tt: times){

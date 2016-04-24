@@ -36,7 +36,7 @@
 <string name="social_media_Message_ShareUsingSocialMediaMobile">Only Mobile test results can be shared using Social Media.</string>
 <string name="about_browsing">Visiting a web page is one of the most common tasks people perform on the Internet. This test emulates that process and shows the average time in seconds of how long a selection of popular web sites took to load. Note that results may vary according to changes in the websites being visited. Times are recorded in seconds (lower is better).</string>
 <string name="about_download">This should be indicative of the maximum speed your broadband connection will be able to download data from the Internet.  Results are recorded in Mbps (higher is better).</string>
-<string name="about_jitter">This test measures the variation in time that it takes one packet to be sent to our test server and then returned back to you. In other words, jitter represents the variation of latency. Jitter is usually an indication of network congestion. High levels of jitter would impact the performance of time sensitive applications such as VoIP, online gaming and video streaming. Jitter is recorded in milliseconds (lower is better).</string>
+<string name="about_jitter">This test measures the variation in the time it takes one packet to be sent to one of our test servers and then returned back to you. In other words, jitter represents the variation of latency. Jitter is usually an indication of network congestion and high levels of jitter would impact the performance of time sensitive applications such as VoIP, online gaming and video streaming. Jitter is recorded in milliseconds (lower is better).</string>
 <string name="about_latency">This test measures how long it takes one packet to be sent to one of our test servers, and then returned back to you.  Latency can be thought of as the responsiveness of the connection from your device and our servers on the Internet. Times are recorded here in milliseconds (lower is better).</string>
 <string name="about_packet_loss">Packet loss occurs when the information sent by your device fails to reach its destination. When packet loss is high, you may find that time sensitive applications such as Voice over IP (VoIP) and online gaming will suffer. Packet loss is recorded here as a percentage (lower is better).</string>
 <string name="about_text">This app runs in the background, measuring your mobile provider\'s network performance whilst you are not using your device. You can view results by pressing the Test Results button.  Measurement results are transmitted back to Samknows for use in their projects with telecoms regulators worldwide.\n\nThe application has been optimised for efficient network usage, however it might be still too high for your data plan. If that\'s the case you may configure a monthly data cap in settings menu accessible via the Menu key.\n\nFor support or queries please contact us at community@samknows.com </string>
@@ -323,10 +323,6 @@
 <string name="summary">Summary</string>
 <string name="system_info">System Info</string>
 <string name="target">Target</string>
-<string name="pm_municipality_caption">Municipality</string>
-<string name="pm_wlan_caption">WLAN Carrier</string>
-<string name="pm_wifi_ssid_caption">SSID</string>
-<string name="pm_country_name_caption">Country</string>
 <string name="terms_and_condition_title">Terms of Use</string>
 <string name="terms_of_use_title">Privacy &amp; Terms of Use</string>
 <string name="test_results">Test Results</string>
@@ -602,14 +598,7 @@
     <string name="pm_your_ip_example">89.105.103.193</string>
     <string name="pm_reference_no_label">Reference No.</string>
     <string name="pm_reference_no_example">00e2145198fc49e1fd5587d0b57db66</string>
-    <string name="pm_network_type_example">WiFi</string>
-    <string name="pm_target_example">Example Target</string>
-    <string name="pm_municipality_example">Anytown</string>
-    <string name="pm_wlan_example">My WLAN</string>
-    <string name="pm_wifi_ssid_example">My SSID</string>
-    <string name="pm_country_name_example">My Country</string>
-    <string name="pm_os_example">5.0</string>
-
+    
         
     <string name="Initial_Warning_Text"></string>
     

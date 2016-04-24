@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/com_facebook_loginbutton_blue_pressed.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable-hdpi-v4/com_facebook_loginbutton_blue_pressed.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/com_facebook_button_grey_focused.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable-hdpi-v4/com_facebook_button_grey_focused.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/com_facebook_icon.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable-hdpi-v4/com_facebook_icon.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/com_facebook_loginbutton_blue_focused.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable-hdpi-v4/com_facebook_loginbutton_blue_focused.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/com_facebook_loginbutton_blue_normal.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable-hdpi-v4/com_facebook_loginbutton_blue_normal.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/com_facebook_button_grey_pressed.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable-hdpi-v4/com_facebook_button_grey_pressed.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/com_facebook_button_grey_normal.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable-hdpi-v4/com_facebook_button_grey_normal.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/com_facebook_logo.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable-hdpi-v4/com_facebook_logo.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/com_facebook_close.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable-hdpi-v4/com_facebook_close.png"
+    }
+]

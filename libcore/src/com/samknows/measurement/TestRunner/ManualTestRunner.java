@@ -1,6 +1,8 @@
 package com.samknows.measurement.TestRunner;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.samknows.libcore.R;
@@ -12,17 +14,20 @@ import com.samknows.measurement.SKApplication;
 import com.samknows.measurement.schedule.TestDescription.*;
 import com.samknows.measurement.net.SubmitTestResultsAnonymousAction;
 import com.samknows.measurement.schedule.condition.ConditionGroupResult;
-import com.samknows.measurement.environment.BaseDataCollector;
+import com.samknows.measurement.schedule.datacollection.BaseDataCollector;
 import com.samknows.measurement.schedule.ScheduleConfig;
 import com.samknows.measurement.schedule.TestDescription;
 import com.samknows.measurement.storage.StorageTestResult.*;
 import com.samknows.measurement.SK2AppSettings;
 import com.samknows.measurement.storage.DBHelper;
+import com.samknows.measurement.storage.PassiveMetric;
 import com.samknows.measurement.storage.StorageTestResult;
 import com.samknows.measurement.storage.TestBatch;
 import com.samknows.measurement.Storage;
+import com.samknows.measurement.test.TestContext;
+import com.samknows.measurement.test.TestExecutor;
 import com.samknows.tests.ClosestTarget;
-import com.samknows.tests.SKAbstractBaseTest;
+import com.samknows.tests.Test;
 import com.samknows.tests.TestFactory;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -72,7 +77,7 @@ public class ManualTestRunner extends SKTestRunner implements Runnable {
     //
     // We're told to run just a specific test... find it, and use it.
     //
-    ArrayList<TestDescription> filteredArrayOfTestDescriptions = new ArrayList<>();
+    ArrayList<TestDescription> filteredArrayOfTestDescriptions = new ArrayList<TestDescription>();
     // We must ALWAYS start with the closest target test - 29/04/2014 ...
     filteredArrayOfTestDescriptions.add(ret.mTestDescription.get(0));
 
@@ -108,7 +113,7 @@ public class ManualTestRunner extends SKTestRunner implements Runnable {
     }
 
     // Add the closest target test
-    List<TestDescription> listOfTestDescriptions = new ArrayList<>();
+    List<TestDescription> listOfTestDescriptions = new ArrayList<TestDescription>();
     listOfTestDescriptions.add(ret.mTestDescription.get(0));
 
     for (TestDescription td : ret.mTestDescription) {
@@ -186,8 +191,8 @@ public class ManualTestRunner extends SKTestRunner implements Runnable {
     TestContext tc = TestContext.createManualTestContext(ctx);
     long startTime = System.currentTimeMillis();
 
-    List<JSONObject> testsResults = new ArrayList<>();
-    List<JSONObject> passiveMetrics = new ArrayList<>();
+    List<JSONObject> testsResults = new ArrayList<JSONObject>();
+    List<JSONObject> passiveMetrics = new ArrayList<JSONObject>();
 
     JSONObject batch = new JSONObject();
     TestExecutor te = new TestExecutor(tc);
@@ -223,9 +228,8 @@ public class ManualTestRunner extends SKTestRunner implements Runnable {
       while (true) {
         try {
           t.join(100);
-          if (!t.isAlive()) {
+          if (!t.isAlive())
             break;
-          }
         } catch (InterruptedException ie) {
           SKLogger.sAssert(false);
         }
@@ -238,7 +242,7 @@ public class ManualTestRunner extends SKTestRunner implements Runnable {
 //        }
 
         // For all test results, we send a progress percentage update Message instance...
-        // the JSON_STATUS_COMPLETE field contains the value from te.getProgress0To100())
+        // the JSON_STATUS_COMPLETE field contains the value from te.getProgress())
         // Typically returns just 1 value - might be up to 3 for latency/loss/jitter!
         List<JSONObject> testProgressList = progressMessage(td, te);
         for (JSONObject pm : testProgressList) {
@@ -266,11 +270,12 @@ public class ManualTestRunner extends SKTestRunner implements Runnable {
 //				}
 //			}
 
-      List<JSONObject> currResults = new ArrayList<>();
-
-      List<JSONObject> theResult = StorageTestResult.testOutput(oe.getTheTest(), td.type);
-      if (theResult != null) {
-        currResults.addAll(theResult);
+      List<JSONObject> currResults = new ArrayList<JSONObject>();
+      for (String out : tr.results) {
+        List<JSONObject> theResult = StorageTestResult.testOutput(out, te);
+        if (theResult != null) {
+          currResults.addAll(theResult);
+        }
       }
 
       // For all test results, we send a Message instance...
@@ -332,10 +337,7 @@ public class ManualTestRunner extends SKTestRunner implements Runnable {
     public TestExecutor te;
     private TestDescription td;
     private ConditionGroupResult tr;
-    private SKAbstractBaseTest theTestThatWasRun = null;
-    public SKAbstractBaseTest getTheTest() {
-      return theTestThatWasRun;
-    }
+    private Test theTestThatWasRun = null;
 
     public ObservableExecutor(TestExecutor te, TestDescription td,
                               ConditionGroupResult tr) {
@@ -349,7 +351,7 @@ public class ManualTestRunner extends SKTestRunner implements Runnable {
       theTestThatWasRun = te.executeTest(td, tr);
     }
 
-    public SKAbstractBaseTest getTheExecutedTestPostRun() {
+    public Test getTheExecutedTestPostRun() {
       return theTestThatWasRun;
     }
 
@@ -358,8 +360,8 @@ public class ManualTestRunner extends SKTestRunner implements Runnable {
   // Typically returns just 1 value - might be up to 3 for latency/loss/jitter!
   static private List<JSONObject> progressMessage(TestDescription td,
                                                   TestExecutor te) {
-    List<JSONObject> ret = new ArrayList<>();
-    List<String> tests = new ArrayList<>();
+    List<JSONObject> ret = new ArrayList<JSONObject>();
+    List<String> tests = new ArrayList<String>();
 
     if (td.type.equals(TestFactory.DOWNSTREAMTHROUGHPUT)) {
       tests.add("" + DETAIL_TEST_ID.DOWNLOAD_TEST_ID.getValueAsInt());
@@ -375,13 +377,16 @@ public class ManualTestRunner extends SKTestRunner implements Runnable {
         JSONObject c = new JSONObject();
         c.put(StorageTestResult.JSON_TYPE_ID, "test");
         c.put(StorageTestResult.JSON_TESTNUMBER, t);
-        c.put(StorageTestResult.JSON_STATUS_COMPLETE, te.getProgress0To100());
+        c.put(StorageTestResult.JSON_STATUS_COMPLETE, te.getProgress());
         c.put(StorageTestResult.JSON_HRRESULT, "");
 
         ret.add(c);
       }
     } catch (JSONException je) {
-      SKLogger.e(ManualTestRunner.class, "Error in creating JSON progress object: " + je.getMessage());
+      SKLogger.e(
+          ManualTestRunner.class,
+          "Error in creating JSON progress object: "
+              + je.getMessage());
     }
     return ret;
   }

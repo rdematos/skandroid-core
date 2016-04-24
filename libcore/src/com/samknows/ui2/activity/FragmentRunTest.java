@@ -5,8 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,10 +24,15 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.CellLocation;
@@ -63,8 +68,6 @@ import com.samknows.measurement.SK2AppSettings;
 import com.samknows.measurement.SKApplication;
 import com.samknows.measurement.SKApplication.eNetworkTypeResults;
 import com.samknows.measurement.TestRunner.SKTestRunner;
-import com.samknows.measurement.environment.NetworkDataCollector;
-import com.samknows.measurement.environment.QueryWlanCarrier;
 import com.samknows.measurement.schedule.ScheduleConfig;
 import com.samknows.measurement.schedule.TestDescription.*;
 import com.samknows.measurement.storage.StorageTestResult;
@@ -116,7 +119,6 @@ public class FragmentRunTest extends Fragment {
   // Text views showing warnings
   private TextView mUnitText;
   private TextView mMeasurementText;
-  private TextView mOptionalWlanCarrierNameText;
   private View initial_warning_text;
   // Text views showing the test result labels
   private TextView tv_Label_Loss, tv_Label_Jitter;
@@ -127,7 +129,7 @@ public class FragmentRunTest extends Fragment {
   private TextView tv_Result_DateDay;
   private TextView tv_Result_DateTime;
   // Text views showing the passive metric headers
-  private TextView pm_tv_header_label_sim_and_network_operators, pm_tv_header_label_signal, pm_tv_header_label_device, pm_tv_header_label_location;
+  private TextView tv_header_label_sim_and_network_operators, tv_header_label_signal, tv_header_label_device, tv_header_label_location;
   // Text views showing the passive metric labels
   private TextView tv_label_sim_operator, tv_label_sim_operator_code, tv_label_network_operator, tv_label_network_operator_code, tv_label_roaming_status,
       tv_label_cell_tower_ID, tv_label_cell_tower_area_location_code, tv_label_signal_strength, tv_label_bearer,
@@ -159,8 +161,6 @@ public class FragmentRunTest extends Fragment {
 
   private TextView publicIp;
   private TextView submissionId;
-  private TextView networkType;
-  private TextView target;
 
   // *** FRAGMENT LIFECYCLE METHODS *** //
   // Called to have the fragment instantiate its user interface view.
@@ -226,10 +226,10 @@ public class FragmentRunTest extends Fragment {
 
     // Assign fonts
     // Passive metrics headers
-    SKTypeface.sSetTypefaceForTextView(pm_tv_header_label_sim_and_network_operators, typeface_Roboto_Thin);
-    SKTypeface.sSetTypefaceForTextView(pm_tv_header_label_signal, typeface_Roboto_Thin);
-    SKTypeface.sSetTypefaceForTextView(pm_tv_header_label_device, typeface_Roboto_Thin);
-    SKTypeface.sSetTypefaceForTextView(pm_tv_header_label_location, typeface_Roboto_Thin);
+    SKTypeface.sSetTypefaceForTextView(tv_header_label_sim_and_network_operators, typeface_Roboto_Thin);
+    SKTypeface.sSetTypefaceForTextView(tv_header_label_signal, typeface_Roboto_Thin);
+    SKTypeface.sSetTypefaceForTextView(tv_header_label_device, typeface_Roboto_Thin);
+    SKTypeface.sSetTypefaceForTextView(tv_header_label_location, typeface_Roboto_Thin);
 
     // Passive metrics labels
     SKTypeface.sSetTypefaceForTextView(tv_label_sim_operator, typeface_Roboto_Light);
@@ -333,8 +333,6 @@ public class FragmentRunTest extends Fragment {
 
   static double lastPolledSpeedValueMbps = 0;
 
-  private Random mRandom = new Random();
-
   private void startTimer() {
 
     Timer myTimer = new Timer();
@@ -363,44 +361,27 @@ public class FragmentRunTest extends Fragment {
 
               Pair<Double, String> value = com.samknows.tests.HttpTest.sGetLatestSpeedForExternalMonitorAsMbps();
               //Log.d("MPCMPCMPC", "gotResult for timer, =" + value.first + " Mbps (" + value.second + ")");
+              if (value.first.doubleValue() != lastPolledSpeedValueMbps) {
 
-              double showValueMbps = value.first;
-              if (showValueMbps == lastPolledSpeedValueMbps) {
-                // When running the upload test, the value might not have changed since last time; this
-                // is because the (behind the scenes) write to the socket via OutputStream can *block* from
-                // time to time, especially on a very slow network connection.
-                // In this case, show a random variation, in order to keep the UI active and show the user
-                // that the app is still running properly.
-                if (mRandom.nextBoolean()) {
-                  showValueMbps *= (1.00 + mRandom.nextDouble() * 0.02);
-                } else {
-                  showValueMbps *= (1.00 - mRandom.nextDouble() * 0.02);
-                }
-              }
-
-              if (showValueMbps != lastPolledSpeedValueMbps) {
-
-                if (value.second.equals(HttpTest.cReasonUploadEnd)) {
-                  // Nothing to do...?!
-
-                } else if ( (value.second.equals(HttpTest.cReasonResetUpload)) ||
-                     (value.second.equals(HttpTest.cReasonResetDownload))
+                if ( (value.second.equals(HttpTest.cReasonResetUpload)) ||
+                     (value.second.equals(HttpTest.cReasonResetDownload)) ||
+                     (value.second.equals(HttpTest.cReasonUploadEnd))
                    )
                 {
                   // Don't display the first "0" for the download/upload test reset...
                   String workingString = getString(R.string.result_working);
                   tv_Gauge_TextView_PsuedoButton.setText(workingString);
                 } else {
-                  //String message = String.valueOf(value);
+                  String message = String.valueOf(value);
 
                   // Update the current result meter for download/upload
-                  updateCurrentTestSpeedMbps(showValueMbps);
+                  updateCurrentTestSpeedMbps(value.first.doubleValue());
 
                   // Update the gauge colour indicator (in Megabytes)
-                  gaugeView.setAngleByValue(showValueMbps);
+                  gaugeView.setAngleByValue(value.first.doubleValue());
                 }
 
-                lastPolledSpeedValueMbps = value.first;
+                lastPolledSpeedValueMbps = value.first.doubleValue();
                 lastTimeMillisCurrentSpeed = System.currentTimeMillis();        // Register the time of the last UI update
               }
             }
@@ -471,83 +452,77 @@ public class FragmentRunTest extends Fragment {
   private void setUpResources(View pView) {
     // Passive metrics fields
     // Header labels
-    pm_tv_header_label_sim_and_network_operators = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_sim_and_network_operators);
-    pm_tv_header_label_signal = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_signal);
-    pm_tv_header_label_device = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_device);
-    pm_tv_header_label_location = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_location);
+    tv_header_label_sim_and_network_operators = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_sim_and_network_operators);
+    tv_header_label_signal = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_signal);
+    tv_header_label_device = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_device);
+    tv_header_label_location = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_location);
 
     //Dividers
-    layout_ll_passive_metrics_divider_sim_and_network_operators = (LinearLayout) pView.findViewById(R.id.fragment_passive_metrics_divider_sim_and_network_operators);
-    layout_ll_passive_metrics_divider_signal = (LinearLayout) pView.findViewById(R.id.fragment_passive_metrics_divider_signal);
-    layout_ll_passive_metrics_divider_location = (LinearLayout) pView.findViewById(R.id.fragment_passive_metrics_divider_location);
+    layout_ll_passive_metrics_divider_sim_and_network_operators = (LinearLayout) pView.findViewById(R.id.fragment_speed_test_passive_metrics_ll_divider_sim_and_network_operators);
+    layout_ll_passive_metrics_divider_signal = (LinearLayout) pView.findViewById(R.id.fragment_speed_test_passive_metrics_ll_divider_signal);
+    layout_ll_passive_metrics_divider_location = (LinearLayout) pView.findViewById(R.id.fragment_speed_test_passive_metric_divider_location);
 
     // Labels
-    tv_label_sim_operator = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_sim_operator);
-    tv_label_sim_operator_code = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_sim_operator_code);
-    tv_label_network_operator = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_network_operator);
-    tv_label_network_operator_code = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_network_operator_code);
-    tv_label_roaming_status = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_roaming_status);
-    tv_label_cell_tower_ID = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_cell_tower_ID);
-    tv_label_cell_tower_area_location_code = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_cell_tower_area_location_code);
-    tv_label_signal_strength = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_signal_strength);
-    tv_label_bearer = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_bearer);
-    tv_label_manufacturer = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_manufacturer);
-    tv_label_model = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_model);
-    tv_label_OS = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_OS);
-    tv_label_OS_version = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_OS_version);
-    tv_label_phone_type = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_phone_type);
-    tv_label_latitude = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_latitude);
-    tv_label_longitude = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_longitude);
-    tv_label_accuracy = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_accuracy);
-    tv_label_provider = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_location_provider);
+    tv_label_sim_operator = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_sim_operator);
+    tv_label_sim_operator_code = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_sim_operator_code);
+    tv_label_network_operator = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_network_operator);
+    tv_label_network_operator_code = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_network_operator_code);
+    tv_label_roaming_status = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_roaming_status);
+    tv_label_cell_tower_ID = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_cell_tower_ID);
+    tv_label_cell_tower_area_location_code = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_cell_tower_area_location_code);
+    tv_label_signal_strength = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_signal_strength);
+    tv_label_bearer = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_bearer);
+    tv_label_manufacturer = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_manufacturer);
+    tv_label_model = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_model);
+    tv_label_OS = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_OS);
+    tv_label_OS_version = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_OS_vesion);
+    tv_label_phone_type = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_phone_type);
+    tv_label_latitude = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_latitude);
+    tv_label_longitude = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_longitude);
+    tv_label_accuracy = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_accuracy);
+    tv_label_provider = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_label_location_provider);
 
     // Results
-    tv_result_sim_operator = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_sim_operator_name);
-    tv_result_sim_operator_code = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_sim_operator_code);
-    tv_result_network_operator = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_network_operator_name);
-    tv_result_network_operator_code = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_network_operator_code);
-    tv_result_roaming_status = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_roaming_status);
-    tv_result_cell_tower_ID = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_cell_tower_id);
-    tv_result_cell_tower_area_location_code = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_cell_tower_area_location_code);
-    tv_result_signal_strength = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_signal_strength);
-    tv_result_bearer = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_bearer);
-    tv_result_manufacturer = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_manufacturer);
-    tv_result_model = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_detail_model);
-    tv_result_OS = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_detail_OS);
-    tv_result_OS_version = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_OS_version);
-    tv_result_phone_type = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_phone_type);
-    tv_result_latitude = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_latitude);
-    tv_result_longitude = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_longitude);
-    tv_result_accuracy = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_accuracy);
-    tv_result_provider = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_location_provider);
+    tv_result_sim_operator = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_sim_operator_name);
+    tv_result_sim_operator_code = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_sim_operator_code);
+    tv_result_network_operator = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_network_operator_name);
+    tv_result_network_operator_code = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_network_operator_code);
+    tv_result_roaming_status = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_roaming_status);
+    tv_result_cell_tower_ID = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_cell_tower_id);
+    tv_result_cell_tower_area_location_code = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_cell_tower_area_location_code);
+    tv_result_signal_strength = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_signal_strength);
+    tv_result_bearer = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_bearer);
+    tv_result_manufacturer = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_manufacturer);
+    tv_result_model = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_detail_model);
+    tv_result_OS = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_detail_OS);
+    tv_result_OS_version = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_OS_version);
+    tv_result_phone_type = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_phone_type);
+    tv_result_latitude = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_latitude);
+    tv_result_longitude = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_longitude);
+    tv_result_accuracy = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_accuracy);
+    tv_result_provider = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_location_provider);
 
-    publicIp = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_your_ip_value);
-    submissionId = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_reference_number_value);
-    networkType = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_network_type);
-    target = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_target);
+    publicIp = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_your_ip_value);
     SKLogger.sAssert(getClass(), publicIp != null);
+    submissionId = (TextView) pView.findViewById(R.id.fragment_speed_test_passive_metric_result_reference_number_value);
     SKLogger.sAssert(getClass(), submissionId != null);
-    SKLogger.sAssert(getClass(), networkType != null);
-    SKLogger.sAssert(getClass(), target != null);
     publicIp.setText("");
     submissionId.setText("");
-    networkType.setText("");
-    target.setText("");
 
     // Identify and hide the passive metrics layout
-    layout_ll_passive_metrics = (LinearLayout) pView.findViewById(R.id.fragment_passive_metrics_ll);
+    layout_ll_passive_metrics = (LinearLayout) pView.findViewById(R.id.fragment_speed_test_ll_passive_metrics);
     layout_ll_passive_metrics.setVisibility(View.GONE);
     layout_ll_passive_metrics.setAlpha(0.0f);
 
     // Now - what items to show?
-    LinearLayout ip_and_reference_metrics = (LinearLayout) pView.findViewById(R.id.ip_and_reference_metrics);
-    LinearLayout fragment_passive_metrics_ll_divider_sim_and_network_operators = (LinearLayout) pView.findViewById(R.id.network_operator_metrics);
-    LinearLayout signal_metrics = (LinearLayout) pView.findViewById(R.id.signal_metrics);
-    LinearLayout device_metrics = (LinearLayout) pView.findViewById(R.id.device_metrics);
-    LinearLayout location_metrics = (LinearLayout) pView.findViewById(R.id.location_metrics);
+    LinearLayout ip_and_reference_metrics = (LinearLayout) pView.findViewById(R.id.ip_and_reference_metrics2);
+    LinearLayout network_operator_metrics = (LinearLayout) pView.findViewById(R.id.network_operator_metrics2);
+    LinearLayout signal_metrics = (LinearLayout) pView.findViewById(R.id.signal_metrics2);
+    LinearLayout device_metrics = (LinearLayout) pView.findViewById(R.id.device_metrics2);
+    LinearLayout location_metrics = (LinearLayout) pView.findViewById(R.id.location_metrics2);
 
     if (SKApplication.getAppInstance().getPassiveMetricsJustDisplayPublicIpAndSubmissionId() == true) {
-      fragment_passive_metrics_ll_divider_sim_and_network_operators.setVisibility(View.GONE);
+      network_operator_metrics.setVisibility(View.GONE);
       signal_metrics.setVisibility(View.GONE);
       device_metrics.setVisibility(View.GONE);
       location_metrics.setVisibility(View.GONE);
@@ -619,7 +594,7 @@ public class FragmentRunTest extends Fragment {
       }
     });
 
-    if (SKApplication.getAppInstance().getRevealMetricsOnMainScreen()) {
+    if (SKApplication.getAppInstance().getRevealPassiveMetricsFromPanel()) {
       // Set a listener to the results layout to move it to the top and show the passive metrics
       layout_ll_results.setOnClickListener(new OnClickListener() {
         @Override
@@ -675,10 +650,6 @@ public class FragmentRunTest extends Fragment {
     mMeasurementText = (TextView) pView.findViewById(R.id.measurement_text_label);
     mMeasurementText.setTextColor(getResources().getColor(R.color.MainColourDialUnitText));
     mMeasurementText.setText("");
-
-    mOptionalWlanCarrierNameText = (TextView) pView.findViewById(R.id.optional_wlan_carrier_name_text);
-    mOptionalWlanCarrierNameText.setTextColor(getResources().getColor(R.color.MainColourDialUnitText));
-    mOptionalWlanCarrierNameText.setText("");
 
     initial_warning_text = pView.findViewById(R.id.initial_warning_text);
 
@@ -775,7 +746,7 @@ public class FragmentRunTest extends Fragment {
       String messageType = message_JSON.getString(StorageTestResult.JSON_TYPE_ID);
 
       // Tests are on progress
-      if (messageType.equals("test")) {
+      if (messageType == "test") {
         statusComplete = message_JSON.getInt(StorageTestResult.JSON_STATUS_COMPLETE);
         testNameAsInt = message_JSON.getInt(StorageTestResult.JSON_TESTNUMBER);
         value = message_JSON.getString(StorageTestResult.JSON_HRRESULT);
@@ -928,7 +899,7 @@ public class FragmentRunTest extends Fragment {
         }
       }
       // Passive metric data process
-      else if (messageType.equals("passivemetric")) {
+      else if (messageType == "passivemetric") {
         String metricString = message_JSON.getString("metricString");
         value = message_JSON.getString("value");
 
@@ -959,13 +930,6 @@ public class FragmentRunTest extends Fragment {
             tv_result_OS.setText(value);
           } else if (metricString.equals("osversion")) {
             tv_result_OS_version.setText(value);
-          } else if (metricString.equals("osversionandroid")) {
-            tv_result_OS_version.setText(value);
-            // TODO - WIFI_SSID and other new stuff!
-            // wifi_ssid
-            // municipality
-            // country_name
-            // android os version string
           } else if (metricString.equals("phonetype")) {
             tv_result_phone_type.setText(value);
           } else if (metricString.equals("latitude")) {
@@ -1129,70 +1093,10 @@ public class FragmentRunTest extends Fragment {
     progressPercent = 0;
   }
 
-  private boolean getNetworkTypeIsWiFi() {
-    Context context = SKApplication.getAppInstance().getApplicationContext();
-    String networkType = Connectivity.getConnectionType(context);
-    if (networkType != null && networkType.equals(SKApplication.getAppInstance().getApplicationContext().getString(R.string.network_type_wifi))) {
-      return true;
-    }
-
-    return false;
-  }
-
-  private void queryForWlanCarrierIfAppSupportsIt() {
-
-    FragmentRunTest.this.mOptionalWlanCarrierNameText.setText("");
-
-    if (SKApplication.getAppInstance().getShouldDisplayWlanCarrierNameInRunTestScreen() == false) {
-      return;
-    }
-
-    // Query for WlanCarrier!
-    final QueryWlanCarrier queryWlanCarrier = new QueryWlanCarrier() {
-      public void doHandleGotWlanCarrier(String wlanCarrier) {
-        //Log.d("MPC", "Main thread got wlanCarrier=" + wlanCarrier);
-
-        final String theWlanCarrier = wlanCarrier;
-
-        mHandler.post(new Runnable() {
-
-          @Override
-          public void run() {
-            // Defend against "java.lang.IllegalStateException: Fragment FragmentRunTest{...} not attached to Activity"
-            // http://stackoverflow.com/questions/10919240/fragment-myfragment-not-attached-to-activity
-            if (isAdded() == false) {
-              SKLogger.sAssert(getClass(), false);
-              return;
-            }
-            if (getActivity() == null) {
-              // e.g. test completes, after fragment detatched
-              SKLogger.sAssert(false);
-              return;
-            }
-
-            FragmentRunTest.this.mOptionalWlanCarrierNameText.setText(theWlanCarrier);
-          }
-        });
-      }
-    };
-
-    new Thread() {
-      @Override
-      public void run() {
-        queryWlanCarrier.doPerformQuery();
-      }
-    }.start();
-  }
-
   /**
    * Create the test and launches it
    */
   public void launchTests() {
-
-    // AT THIS POINT - query for WLan!
-
-    queryForWlanCarrierIfAppSupportsIt();
-
     createManualTest();                // Create the manual test object storing which tests will be performed
     threadRunningTests = new Thread(manualTest);  // Create the thread with the Manual Test Object (Runnable Object)
     changeLabelText(getString(R.string.label_message_starting_tests));
@@ -1352,10 +1256,6 @@ public class FragmentRunTest extends Fragment {
           if (nameOfTheServer == null) {
             nameOfTheServer = hostUrl;
           }
-
-          // Set the server name in the optional detailed pop-up results...
-          target.setText(nameOfTheServer);
-
           changeFadingTextViewValue(mUnitText, nameOfTheServer, getResources().getColor(R.color.MainColourDialUnitText));    // Update the current result closest target
           changeFadingTextViewValue(mMeasurementText, nameOfTheServer, getResources().getColor(R.color.MainColourDialUnitText));    // Update the current result closest target
 
@@ -1375,7 +1275,7 @@ public class FragmentRunTest extends Fragment {
           // Update the UI data only few times a second
           if (executingLatencyTest && System.currentTimeMillis() - lastTimeMillisCurrentSpeed > C_UPDATE_INTERVAL_IN_MS) {
             updateCurrentLatencyValue(latencyMilli);                // Update the current result meter for latency
-            gaugeView.setAngleByValue((double) latencyMilli);          // Update the gauge colour indicator
+            gaugeView.setAngleByValue(Double.valueOf(latencyMilli));          // Update the gauge colour indicator
 
             lastTimeMillisCurrentSpeed = System.currentTimeMillis();    // Register the time of the last UI update
           }
@@ -1439,7 +1339,7 @@ public class FragmentRunTest extends Fragment {
     // Get the selected tests from shared preferences
     restoreWhichTestsToRun();
 
-    List<SCHEDULE_TEST_ID> testIDs = new ArrayList<>();
+    List<SCHEDULE_TEST_ID> testIDs = new ArrayList<SCHEDULE_TEST_ID>();
 
     // Create the list of tests to be performed
     // All tests
@@ -1559,13 +1459,9 @@ public class FragmentRunTest extends Fragment {
     if (pNetworkType == eNetworkTypeResults.eNetworkTypeResults_WiFi) {
       iv_Result_NetworkType.setImageResource(R.drawable.ic_swifi);
       connectivityType = eNetworkTypeResults.eNetworkTypeResults_WiFi;
-      // Set the network type string in the optional detailed pop-up results...
-      networkType.setText(R.string.network_type_wifi);
     } else {
       iv_Result_NetworkType.setImageResource(R.drawable.ic_sgsm);
       connectivityType = eNetworkTypeResults.eNetworkTypeResults_Mobile;
-      // Set the network type string in the optional detailed pop-up results...
-      networkType.setText(R.string.network_type_mobile);
     }
   }
 
@@ -1657,7 +1553,28 @@ public class FragmentRunTest extends Fragment {
   }
 
   static private String sCurrentWifiSSID() {
-    return NetworkDataCollector.sCurrentWifiSSIDNullIfNotFound();
+    Context context = SKApplication.getAppInstance().getApplicationContext();
+
+    //ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    WifiManager wifiManager=(WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+    //if (connManager != null && wifiManager != null) {
+    if (wifiManager != null) {
+      //NetworkInfo netInfo = connManager.getActiveNetworkInfo();
+      WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+      //if (netInfo != null && wifiInfo != null) {
+      if (wifiInfo != null) {
+        String theSSID = wifiInfo.getSSID();
+        if (theSSID == null) {
+          SKLogger.sAssert(false);
+        } else {
+          String wifiInfoSSID = wifiInfo.getSSID().replace("\"", "");
+          //wifiInfoSSID = "A test network";
+          return wifiInfoSSID;
+        }
+      }
+    }
+
+    return null;
   }
 
   private String getWiFiStringForUIWithSSIDIfAvailable() {
@@ -1763,7 +1680,6 @@ public class FragmentRunTest extends Fragment {
   private void setUpPassiveMetricsLayout(eNetworkTypeResults pNetworkType) {
     int visibility;
 
-    /*
     if (pNetworkType == eNetworkTypeResults.eNetworkTypeResults_WiFi) {
       visibility = View.GONE;
     } else {
@@ -1771,8 +1687,8 @@ public class FragmentRunTest extends Fragment {
     }
 
     // Header labels
-    pm_tv_header_label_sim_and_network_operators.setVisibility(visibility);
-    pm_tv_header_label_signal.setVisibility(visibility);
+    tv_header_label_sim_and_network_operators.setVisibility(visibility);
+    tv_header_label_signal.setVisibility(visibility);
     //Dividers
     layout_ll_passive_metrics_divider_sim_and_network_operators.setVisibility(visibility);
     layout_ll_passive_metrics_divider_signal.setVisibility(visibility);
@@ -1800,7 +1716,7 @@ public class FragmentRunTest extends Fragment {
     // If the location metrics are not available, just hide those labels
     int visibilityOfLocation = tv_result_longitude.getText().equals("") ? View.GONE : View.VISIBLE;
 
-    pm_tv_header_label_location.setVisibility(visibilityOfLocation);
+    tv_header_label_location.setVisibility(visibilityOfLocation);
     layout_ll_passive_metrics_divider_location.setVisibility(visibilityOfLocation);
     tv_label_latitude.setVisibility(visibilityOfLocation);
     tv_label_longitude.setVisibility(visibilityOfLocation);
@@ -1810,7 +1726,6 @@ public class FragmentRunTest extends Fragment {
     tv_result_longitude.setVisibility(visibilityOfLocation);
     tv_result_accuracy.setVisibility(visibilityOfLocation);
     tv_result_provider.setVisibility(visibilityOfLocation);
-    */
   }
 
   /**
@@ -1903,8 +1818,6 @@ public class FragmentRunTest extends Fragment {
     checkOutDataCap();                        // Check out if we have reach the data cap to show the warning
 
     testsRunning = false;                      // Indicate that we are not running tests
-    // Prevent our getting bombarded with more info from the test!
-    HttpTest.sLatestSpeedReset();
     manualTest = null;
     threadRunningTests = null;
 
@@ -1923,7 +1836,7 @@ public class FragmentRunTest extends Fragment {
     gaugeView.setKindOfTest(-1);
     setNetworkTypeInformation();
     sendRefreshUIMessage();
-    if (SKApplication.getAppInstance().getRevealMetricsOnMainScreen()) {
+    if (SKApplication.getAppInstance().getRevealPassiveMetricsFromPanel()) {
       layout_ll_results.setClickable(true);
     }
     setUpPassiveMetricsLayout(connectivityType);
@@ -2156,6 +2069,7 @@ public class FragmentRunTest extends Fragment {
                 public void onClick(DialogInterface dialog, int which) {
                 }
               }).show();
+      return;
     } else {
       doRunTestAfterAllPreStartChecksCompleted();
     }

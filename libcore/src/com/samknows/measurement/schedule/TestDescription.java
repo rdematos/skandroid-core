@@ -32,7 +32,7 @@ public class TestDescription implements Serializable{
 
     private int value;
 
-    SCHEDULE_TEST_ID(int value) {
+    private SCHEDULE_TEST_ID(int value) {
       this.value = value;
     }
 
@@ -111,7 +111,7 @@ public class TestDescription implements Serializable{
 			td.isPrimary = false;
 		}
 		
-		td.times = new ArrayList<>();
+		td.times = new ArrayList<Long>();
 		NodeList list = node.getElementsByTagName(XML_TIME);
 		for (int i = 0; i < list.getLength(); i++) {
 			Element ep = (Element) list.item(i);
@@ -125,7 +125,7 @@ public class TestDescription implements Serializable{
 			}
 		});
 		
-		td.params = new ArrayList<>();
+		td.params = new ArrayList<Param>();
 		NodeList params = node.getElementsByTagName(XML_PARAMS);
 		if(params.getLength() == 1){
 			NodeList test_params = ((Element)params.item(0)).getElementsByTagName(XML_PARAM);
@@ -139,7 +139,7 @@ public class TestDescription implements Serializable{
 		
 		
 		NodeList failoverParams = node.getElementsByTagName(XML_FAILOVER_PARAMS);
-		td.failoverParams = new ArrayList<>();
+		td.failoverParams = new ArrayList<Param>();
 		if(failoverParams.getLength() == 1){
 			NodeList test_params = ((Element)failoverParams.item(0)).getElementsByTagName(XML_PARAMS);
 			for(int i=0; i< test_params.getLength(); i++){
@@ -148,7 +148,7 @@ public class TestDescription implements Serializable{
 			}
 		}
 		
-		td.outParamsDescription = new ArrayList<>();
+		td.outParamsDescription = new ArrayList<OutParamDescription>();
 		NodeList outParams = node.getElementsByTagName(XML_FIELD);
 		for (int i = 0; i < outParams.getLength(); i++) {
 			Element ep = (Element) outParams.item(i);
@@ -158,6 +158,12 @@ public class TestDescription implements Serializable{
 			td.outParamsDescription.add(pd);
 		}
 		return td;
+	}
+	
+	public boolean canExecute() {
+		TestParamsManager manager = CachingStorage.getInstance().loadParamsManager(); 
+		boolean isClosestParamSet = manager == null ? false : manager.hasParam("closest");
+		return isClosestParamSet || type.equalsIgnoreCase(SKConstants.TEST_TYPE_CLOSEST_TARGET);
 	}
 
 	@Override

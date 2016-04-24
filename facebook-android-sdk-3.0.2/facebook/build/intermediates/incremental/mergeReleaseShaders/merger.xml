@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/src/main/shaders"/></dataSet><dataSet config="release"><source path="/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build-types/release/shaders"/></dataSet></merger>

@@ -118,7 +118,7 @@ public class SKConstants {
 	
 	//data cap limits
 	//public static final int DATA_CAP_DEFAULT_VALUE=100;
-	public static final int DATA_CAP_MAX_VALUE=5000;
+	public static final int DATA_CAP_MAX_VALUE=10000;
 	public static final int DATA_CAP_MIN_VALUE=1;
 	
 }

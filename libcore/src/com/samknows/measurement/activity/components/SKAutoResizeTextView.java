@@ -2,6 +2,10 @@ package com.samknows.measurement.activity.components;
 
 import android.content.Context;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 
 // A version of TextView that automatically scales-back the font size to fit the available space.

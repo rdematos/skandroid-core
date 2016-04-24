@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string msgid="8472377992819116328" name="auth_client_availability_notification_title">"Instal·lació/actualització/activació de Google Play Services"</string>
+    <string msgid="3635065018897986478" name="auth_client_play_services_err_notification_msg">"Error de Google Play Services"</string>
+    <string msgid="6304135633531965756" name="auth_client_requested_by_msg">"Sol·licitat per <ns1:g id="APP_NAME">%1$s</ns1:g>"</string>
+    <string msgid="4181637455539816337" name="common_google_play_services_enable_button">"Activa Google Play Services"</string>
+    <string msgid="7627896071867667758" name="common_google_play_services_enable_text">"Aquesta aplicació no funcionarà si no actives Google Play Services."</string>
+    <string msgid="529078775174559253" name="common_google_play_services_enable_title">"Activa Google Play Services"</string>
+    <string msgid="8515591849428043265" name="common_google_play_services_install_button">"Obtén Google Play Services"</string>
+    <string msgid="8685301130651051380" name="common_google_play_services_install_text_phone">"Aquesta aplicació no s\'executarà si el telèfon no té instal·lat Google Play Services."</string>
+    <string msgid="1589957570365247855" name="common_google_play_services_install_text_tablet">"Aquesta aplicació no funcionarà si la tauleta no té Google Play Services instal·lat."</string>
+    <string msgid="26645092511305524" name="common_google_play_services_install_title">"Obtenció de Google Play Services"</string>
+    <string msgid="4762332809710093730" name="common_google_play_services_unknown_issue">"Problema desconegut amb Google Play Services."</string>
+    <string msgid="3542578567569488671" name="common_google_play_services_unsupported_text">"Google Play Services, en què es basen algunes de les teves aplicacions, no és compatible amb el teu dispositiu. Contacta amb el fabricant per obtenir assistència."</string>
+    <string msgid="6334768798839376943" name="common_google_play_services_unsupported_title">"Google Play Services"</string>
+    <string msgid="8932944190611227642" name="common_google_play_services_update_button">"Actualitza"</string>
+    <string msgid="448354684997260580" name="common_google_play_services_update_text">"Aquesta aplicació no s\'executarà si no actualitzes Google Play Services."</string>
+    <string msgid="6006316683626838685" name="common_google_play_services_update_title">"Actualització de Google Play Services"</string>
+    <string msgid="2429381841831957106" name="common_signin_button_text_long">"Inicia sessió amb Google"</string>
+</resources>

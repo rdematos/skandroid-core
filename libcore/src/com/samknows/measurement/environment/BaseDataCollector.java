@@ -1,60 +1,63 @@
 package com.samknows.measurement.environment;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.json.JSONObject;
-import org.w3c.dom.Element;
+import android.content.Context;
 
-import com.samknows.libcore.SKLogger;
-import com.samknows.measurement.TestRunner.TestContext;
-
-public abstract class BaseDataCollector implements Serializable{
-	private static final long serialVersionUID = 1L;
-	public boolean isEnabled;
-	protected TestContext tc;
+public abstract class BaseDataCollector {
+	protected Context context;
+	List<DCSData> mListDCSData;
 	
-	
-	public void start(TestContext ctx){
-		clearData();
-		tc = ctx;
-	}
-	public void stop(TestContext ctx){}
-	//public abstract List<String> getOutput();
-	public abstract List<JSONObject> getJSONOutput();
-	public abstract List<JSONObject> getPassiveMetric();
-	public abstract void clearData();
-	public enum Type {
-		Location, Environment
+	public BaseDataCollector(Context context) {
+		super();
+		this.context = context;
+		mListDCSData = Collections.synchronizedList(new ArrayList<DCSData>());
 	}
 	
-	public static BaseDataCollector sParseXml(Element node) {
-		BaseDataCollector c = null;
-		try {
-			Type type = Type.valueOf(node.getAttribute("type"));
-			switch (type) {
-			case Location : {
-				c = LocationDataCollector.parseXml(node);
-				break;
+	/*
+	 * Start the collector
+	 */
+	public abstract void start();
+	
+	/* 
+	 * Stop the collector   
+	 */
+	public abstract void stop();
+	
+	/*
+	 * Collect the pending data
+	 * if the collected data is empty for the last period return the latest value collected
+	 * 
+	 */
+	public List<DCSData> collectPartialData(){
+		List<DCSData> ret = new ArrayList<DCSData>();
+		synchronized(mListDCSData){
+			if(!mListDCSData.isEmpty()){
+				for(DCSData data: mListDCSData){
+					ret.add(data);
+				}
+				mListDCSData.clear();
 			}
-			case Environment : {
-				c = new EnvironmentDataCollector();
-				break;
+			else{
+				ret.add(collect());
 			}
-			default : SKLogger.e(BaseDataCollector.class, "not such data collector: " + type);
-			}
-		} catch (Exception e) {
-			SKLogger.e(BaseDataCollector.class, "Error in parsing data collector type: "+ e.getMessage());
 		}
-		
-		if (c != null) {
-			c.isEnabled = true;
-			if(!node.getAttribute("enabled").equals("")){
-				c.isEnabled = Boolean.valueOf(node.getAttribute("enabled"));
-			}
-			
-		}
-		
-		return c;
+		return ret;
 	}
+	
+	public void addData(DCSData data){
+		mListDCSData.add(data);
+	}
+	
+	/*
+	 * Collect a snapshot of the data instead listening for the changes
+	 * it behaves as calling:
+	 * start();
+	 * stop();
+	 * collectPartialData();
+	 */
+	public abstract DCSData collect();
+	
 }

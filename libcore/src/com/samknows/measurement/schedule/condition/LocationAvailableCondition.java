@@ -5,8 +5,8 @@ import android.util.Log;
 import org.w3c.dom.Element;
 
 import com.samknows.libcore.SKLogger;
-import com.samknows.measurement.environment.LocationDataCollector;
-import com.samknows.measurement.TestRunner.TestContext;
+import com.samknows.measurement.schedule.datacollection.LocationDataCollector;
+import com.samknows.measurement.test.TestContext;
 import com.samknows.measurement.util.XmlUtils;
 
 public class LocationAvailableCondition extends Condition{

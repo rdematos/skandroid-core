@@ -21,18 +21,19 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.json.JSONObject;
 
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.Pair;
 
 import com.samknows.libcore.SKLogger;
-import com.samknows.measurement.TestParamsManager;
+import com.samknows.measurement.TestRunner.ManualTestRunner;
+import com.samknows.measurement.SKApplication;
 import com.samknows.measurement.TestRunner.SKTestRunner;
-import com.samknows.measurement.schedule.OutParamDescription;
 import com.samknows.measurement.util.SKDateFormat;
 
-public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
+public class ClosestTarget extends Test {
 
   /*
    * constants for creating a ClosestTarget test
@@ -70,17 +71,6 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
   public static final String JSON_CLOSETTARGET = "closest_target";
   public static final String JSON_IPCLOSESTTARGET = "ip_closest_target";
 
-  private ClosestTarget(List<Param> params) {
-    synchronized (ClosestTarget.this) {
-      sClosestTarget = "";
-      setParams(params);
-    }
-  }
-
-  static ClosestTarget sCreateClosestTarget(List<Param> params) {
-    return new ClosestTarget(params);
-  }
-
   public class Result {
     public int total;
     public int completed;
@@ -89,13 +79,20 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
   }
 
   //Used to collect the results from the individual LatencyTests as soon as the finish
-  private BlockingQueue<LatencyTest.Result> bq_results = new LinkedBlockingQueue<>();
+  public BlockingQueue<LatencyTest.Result> bq_results = new LinkedBlockingQueue<LatencyTest.Result>();
 
   //public ClosestTarget() {
   //	synchronized (ClosestTarget.this) {
   //		sClosestTarget = "";
   //	}
   //}
+
+  public ClosestTarget(List<Param> params) {
+    synchronized (ClosestTarget.this) {
+      sClosestTarget = "";
+      setParams(params);
+    }
+  }
 
   private boolean between(int x, int a, int b) {
     return (x >= a && x <= b);
@@ -124,7 +121,7 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
   }
 
   @Override
-  public void runBlockingTestToFinishInThisThread() {
+  public void execute() {
     find();
   }
 
@@ -143,46 +140,47 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
     return success;
   }
 
-  private void setNumberOfDatagrams(int n) {
+  public void setNumberOfDatagrams(int n) {
     nPackets = n;
   }
 
-  private void setInterPacketTime(int t) {
+  public void setInterPacketTime(int t) {
     interPacketTime = t;
   }
 
-  private void setDelayTimeout(int t) {
+  public void setDelayTimeout(int t) {
     delayTimeout = t;
   }
 
-  private void setPort(int p) {
+  public void setPort(int p) {
     port = p;
   }
 
-  private void addTarget(String target) {
+  public void addTarget(String target) {
     targets.add(target);
   }
 
   public void setTargetListEmpty() {
-    targets = new ArrayList<>();
+    targets = new ArrayList<String>();
   }
 
-  /*
-  Some networks block UDP traffic; and some might even block raw TCP traffic!
-  GIVEN: performing a closest target test
-  WHEN:  UDP fails
-  THEN:  we need use HTTP as the ultimate failsafe.
-  Therefore, as a fall-back from the UDP best-target-selection process:
-  1. Make three HTTP requests to "/" on each server. Set a 2 second timeout on each request.
-     Ideally, you should parallelise them (maybe allow up to 6 concurrent requests).
-  2. Choose the server with the lowest non-zero response time
-     (not an average of the three requests - just take the one with the absolute lowest)
-  */
 
-  private static final int CHttpQueryTimeoutSeconds = 2;
+     /*
+     Some networks block UDP traffic; and some might even block raw TCP traffic!
+     GIVEN: performing a closest target test
+     WHEN:  UDP fails
+     THEN:  we need use HTTP as the ultimate failsafe.
+     Therefore, as a fall-back from the UDP best-target-selection process:
+     1. Make three HTTP requests to "/" on each server. Set a 2 second timeout on each request.
+        Ideally, you should parallelise them (maybe allow up to 6 concurrent requests).
+     2. Choose the server with the lowest non-zero response time
+        (not an average of the three requests - just take the one with the absolute lowest)
+     */
+
+  static final int CHttpQueryTimeoutSeconds = 2;
 
   // Query the specified URL, and return <status,latency>
-  private static Pair<Boolean, Long> sGetHttpResponseAndReturnLatencyMilliseconds(String urlString) {
+  static Pair<Boolean, Long> sGetHttpResponseAndReturnLatencyMilliseconds(String urlString) {
     //AsyncHttpClient client = new AsyncHttpClient();
     //client.setTimeout(5000); // This is in milliseconds!
 
@@ -218,7 +216,7 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
 
         Log.d(ClosestTarget.sGetTAG(), "DEBUG: HTTP/Closest target test - success - measuredLatencyMilliseconds = " + measuredLatencyMilliseconds);
 
-        return new Pair<>(true, measuredLatencyMilliseconds);
+        return new Pair<Boolean, Long>(Boolean.valueOf(true), Long.valueOf(measuredLatencyMilliseconds));
       }
 
     } catch (SocketTimeoutException ste) {
@@ -235,7 +233,7 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
       SKLogger.sAssert(ClosestTarget.class, false);
     }
 
-    return new Pair<>(false, -100L);
+    return new Pair<Boolean, Long>(Boolean.valueOf(false), Long.valueOf(-100L));
   }
 
   private static final String TAG = ClosestTarget.class.getName();
@@ -244,8 +242,8 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
     return TAG;
   }
 
-  private final int cQueryCountPerServer = 3;
-  private ArrayList<Integer> finishedTestsPerServer = new ArrayList<>();
+  final int cQueryCountPerServer = 3;
+  ArrayList<Integer> finishedTestsPerServer = new ArrayList<Integer>();
 
   private boolean mbInHttpTestingFallbackMode = false;
   private boolean mbUdpClosestTargetTestSucceeded = false;
@@ -281,7 +279,7 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
       startSignal = inStartSignal;
       doneSignal = inDoneSignal;
 
-      latencyTest = latencyTests[serverIndex];
+      latencyTest = (LatencyTest) (latencyTests[serverIndex]);
       SKLogger.sAssert(getClass(), latencyTest.getTarget().equals(target));
     }
 
@@ -302,9 +300,9 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
     void doWork() {
 
       Pair<Boolean, Long> latencyQueryResult = ClosestTarget.sGetHttpResponseAndReturnLatencyMilliseconds(urlString);
-      if (latencyQueryResult.first) {
+      if (latencyQueryResult.first.booleanValue()) {
         // Succeeded!
-        measuredLatencyMilliseconds = latencyQueryResult.second;
+        measuredLatencyMilliseconds = latencyQueryResult.second.longValue();
         SKLogger.sAssert(getClass(), measuredLatencyMilliseconds > 0L);
       } else {
         // Failed to get a latency measurement!
@@ -328,18 +326,18 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
         // Increment "finished" only when the last async test for the server is completed.
         int value = finishedTestsPerServer.get(serverIndex);
         value++;
-        finishedTestsPerServer.set(serverIndex, value);
+        finishedTestsPerServer.set(serverIndex, Integer.valueOf(value));
 
         if (value == cQueryCountPerServer) {
           finished++;
         }
 
-        latencyTest.status = SKAbstractBaseTest.STATUS.DONE;
+        latencyTest.status = Test.STATUS.DONE;
         latencyTest.finished = true;
 
         // Add a new result to the queue for display...
         // Will be ignored if not the best yet!
-        LatencyTest.sCreateAndPushLatencyResultNanoseconds(bq_results, closestTarget, curr_best_Nanoseconds);
+        LatencyTest.sCreateAndPushLatencyResultNanoseconds(bq_results, closestTarget, (long) curr_best_Nanoseconds);
       }
     }
   }
@@ -371,7 +369,7 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
       int tempIndex;
       for (tempIndex = 0; tempIndex < serverCount; tempIndex++) {
         Log.d(TAG, "DEBUG: tryHttpClosestTargetTestIfUdpTestFails - targets[" + tempIndex + "]=" + targets.get(tempIndex));
-        finishedTestsPerServer.add(0);
+        finishedTestsPerServer.add(Integer.valueOf(0));
       }
     }
 
@@ -382,7 +380,7 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
     CountDownLatch startSignal = new CountDownLatch(1);
     CountDownLatch queryCompleteCountdown = new CountDownLatch(queriesToRun);
     //queryCompleteCountdown = queriesToRun;
-    ArrayList<Long> bestLatencyMillisecondsPerServer = new ArrayList<>();
+    ArrayList<Long> bestLatencyMillisecondsPerServer = new ArrayList<Long>();
 
     //
     // Fire this off in separate async tasks, and block waiting for them all to complete!
@@ -391,10 +389,10 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
     int serverIndex;
     for (serverIndex = 0; serverIndex < serverCount; serverIndex++) {
       // -100 means - no successful response - yet!
-      bestLatencyMillisecondsPerServer.add(-100L);
+      bestLatencyMillisecondsPerServer.add(Long.valueOf(-100L));
     }
 
-    ArrayList<WorkerRunner> workerRunnableArray = new ArrayList<>();
+    ArrayList<WorkerRunner> workerRunnableArray = new ArrayList<WorkerRunner>();
 
     for (serverIndex = 0; serverIndex < serverCount; serverIndex++) {
       String target = targets.get(serverIndex);
@@ -454,12 +452,13 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
   }
 
 
-  private boolean find() {
+  public boolean find() {
     boolean ret = false;
     if (targets.size() == 0) {
+      output();
       return ret;
     }
-    ArrayList<Thread> threads = new ArrayList<>();
+    ArrayList<Thread> threads = new ArrayList<Thread>();
     latencyTests = new LatencyTest[targets.size()];
 
     for (int i = 0; i < targets.size(); i++) {
@@ -486,12 +485,15 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
     int minDist = Integer.MAX_VALUE;
     for (int i = 0; i < targets.size(); i++) {
 
-      if (latencyTests[i].isSuccessful()) {
+      if (latencyTests[i].getOutputField(LatencyTest.STATUSFIELD).equals(
+          "OK")) {
         success = true;
-        int avg = (int) latencyTests[i].getAverageMicroseconds();
+        int avg = Integer.parseInt(latencyTests[i]
+            .getOutputField(LatencyTest.AVERAGEFIELD));
         if (avg < minDist) {
           closestTarget = targets.get(i);
-          ipClosestTarget = latencyTests[i].getIpAddress();
+          ipClosestTarget = latencyTests[i]
+              .getOutputField(LatencyTest.IPTARGETFIELD);
           minDist = avg;
         }
       }
@@ -522,6 +524,7 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
       mbFinishedSelectingClosestTarget = true;
       ret = true;
     }
+    output();
     return ret;
   }
 
@@ -532,29 +535,27 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
     return closestTarget;
   }
 
-  private Long mTimestamp = SKAbstractBaseTest.sGetUnixTimeStamp();
-  @Override
-  public synchronized void finish() {
-    mTimestamp = SKAbstractBaseTest.sGetUnixTimeStamp();
-    status = STATUS.DONE;
+  public String getHumanReadableResult() {
+    String ret = "";
+    if (closestTarget.equals(VALUE_NOT_KNOWN)) {
+      ret = "Impossible to find the Best Target.";
+    } else {
+      ret = String.format("The Best Target is %s.", closestTarget);
+    }
+    return ret;
   }
 
-  @Override
-  public long getTimestamp() {
-    return mTimestamp;
-  }
-
-  @Override
-  public JSONObject getJSONResult() {
-    ArrayList<String> o = new ArrayList<>();
-    Map<String, Object> output = new HashMap<>();
+  private void output() {
+    ArrayList<String> o = new ArrayList<String>();
+    Map<String, Object> output = new HashMap<String, Object>();
     //string id
     o.add(TESTSTRING);
     output.put(JsonData.JSON_TYPE, TESTSTRING);
     //TIME
-    o.add(mTimestamp + "");
-    output.put(JsonData.JSON_TIMESTAMP, mTimestamp);
-    output.put(JsonData.JSON_DATETIME, SKDateFormat.sGetDateAsIso8601String(new java.util.Date(mTimestamp * 1000)));
+    long time_stamp = unixTimeStamp();
+    o.add(time_stamp + "");
+    output.put(JsonData.JSON_TIMESTAMP, time_stamp);
+    output.put(JsonData.JSON_DATETIME, SKDateFormat.sGetDateAsIso8601String(new java.util.Date(time_stamp * 1000)));
     //status
     boolean status = true;
     if (closestTarget.equals(VALUE_NOT_KNOWN)) {
@@ -574,19 +575,18 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
     o.add(ipClosestTarget);
     output.put(JSON_IPCLOSESTTARGET, ipClosestTarget);
 
-    //setOutput(o.toArray(new String[1]));
-    JSONObject json_output = new JSONObject(output);
-    return json_output;
+    setOutput(o.toArray(new String[1]));
+    setJSONResult(output);
   }
 
-  private LatencyTest[] latencyTests = null;
-  private ArrayList<String> targets = new ArrayList<>();
+  private Test[] latencyTests = null;
+  private ArrayList<String> targets = new ArrayList<String>();
   private int nPackets = _NPACKETS;
   private int interPacketTime = _INTERPACKETTIME;
   private int delayTimeout = _DELAYTIMEOUT;
   private int port = _PORT;
   private String closestTarget = VALUE_NOT_KNOWN;
-  private boolean success = false;
+  boolean success = false;
   private String ipClosestTarget = VALUE_NOT_KNOWN;
 
   // This is used purely by the UI, to display a count-down of the target servers latency test.
@@ -598,7 +598,7 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
   private long curr_best_Nanoseconds = Long.MAX_VALUE;
   private String curr_best_target;
 
-  private static String sClosestTarget = VALUE_NOT_KNOWN;
+  static String sClosestTarget = VALUE_NOT_KNOWN;
 
   public static String sGetClosestTarget() {
     synchronized (ClosestTarget.class) {
@@ -615,14 +615,19 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
   }
 
   @Override
-  public int getProgress0To100() {
+  public boolean isProgressAvailable() {
+    return true;
+  }
+
+  @Override
+  public int getProgress() {
     if (latencyTests == null) {
       return 0;
     }
     int min = 100;
-    for (LatencyTest t : latencyTests) {
+    for (Test t : latencyTests) {
       if (t != null) {
-        int curr = t.getProgress0To100();
+        int curr = t.getProgress();
         min = curr < min ? curr : min;
       }
     }
@@ -684,6 +689,14 @@ public class ClosestTarget extends SKAbstractBaseTest implements Runnable {
   public String getStringID() {
     return TESTSTRING;
   }
+
+
+  @Override
+  public HashMap<String, String> getResults() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 
   final private void setParams(List<Param> params) {
     try {

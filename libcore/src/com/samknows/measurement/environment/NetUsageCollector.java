@@ -5,7 +5,7 @@ import com.samknows.measurement.Storage;
 
 import android.content.Context;
 
-public class NetUsageCollector extends EnvBaseDataCollector {
+public class NetUsageCollector extends BaseDataCollector {
 	public static final String NETUSAGE_STORAGE = "netusage_storage";
 	public NetUsageCollector(Context context) {
 		super(context);

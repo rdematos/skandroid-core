@@ -203,10 +203,10 @@ public class Connection {
 	 */
 	private String retrieveInputStream(HttpEntity httpEntity) {
 		int length = (int) httpEntity.getContentLength();
-		boolean chunked = httpEntity.isChunked();
+		boolean chunked = (boolean) httpEntity.isChunked();
 		
 		Log.i(TAG, "Chunked: "+ Boolean.toString(chunked) + " - Length: " + Integer.toString(length));
-		StringBuilder stringBuffer = new StringBuilder(length);
+		StringBuffer stringBuffer = new StringBuffer(length);
 		try {
 			InputStreamReader inputStreamReader = new InputStreamReader(httpEntity.getContent(), HTTP.UTF_8);
 			char buffer[] = new char[length];

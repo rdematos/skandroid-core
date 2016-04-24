@@ -11,8 +11,6 @@ import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -20,13 +18,13 @@ import android.util.Log;
 import com.samknows.libcore.R;
 import com.samknows.libcore.SKLogger;
 import com.samknows.libcore.SKConstants;
-import com.samknows.measurement.environment.Reachability;
 import com.samknows.measurement.schedule.ScheduleConfig;
 import com.samknows.measurement.schedule.ScheduleConfig.LocationType;
 import com.samknows.measurement.schedule.ScheduleConfig.TestAlarmType;
-import com.samknows.measurement.statemachine.state.StateEnum;
+import com.samknows.measurement.statemachine.State;
 import com.samknows.measurement.util.SKDateFormat;
 import com.samknows.measurement.util.TimeUtils;
+import com.samknows.measurement.util.OtherUtils;
 
 public class SK2AppSettings extends SKAppSettings {
 	private static final String TAG = SK2AppSettings.class.getName();
@@ -132,16 +130,16 @@ public class SK2AppSettings extends SKAppSettings {
 	}
 		
 
-	public void saveState(StateEnum state) {
+	public void saveState(State state) {
 		saveString(SKConstants.PREF_KEY_STATE, String.valueOf(state));
 	}
 	
-	public StateEnum getState() {
-		StateEnum ret = StateEnum.NONE;
+	public State getState() {
+		State ret = State.NONE;
 
 		String state = getString(SKConstants.PREF_KEY_STATE);
 		if (state != null) {
-			for(StateEnum s: StateEnum.values()){
+			for(State s:State.values()){
 				if(state.equalsIgnoreCase(String.valueOf(s))){
 					ret = s;
 					break;
@@ -186,7 +184,7 @@ public class SK2AppSettings extends SKAppSettings {
 	}
 
 	public void appendUsedBytes(long bytes) {
-		if(Reachability.sGetIsNetworkWiFi()){
+		if(OtherUtils.isWifi(ctx)){
 			return;
 		}
 		resetDataUsageIfTime();
@@ -242,7 +240,7 @@ public class SK2AppSettings extends SKAppSettings {
 	}
 	
 	public boolean isDataCapAlreadyReached(){
-		if(Reachability.sGetIsNetworkWiFi()){
+		if(OtherUtils.isWifi(ctx)){	
 			return false;
 		}
 		resetDataUsageIfTime();
@@ -262,7 +260,7 @@ public class SK2AppSettings extends SKAppSettings {
 	}
 	
 	public boolean isDataCapLikelyToBeReached(long bytesToBeUsed){
-		if(Reachability.sGetIsNetworkWiFi()){
+		if(OtherUtils.isWifi(ctx)){	
 			return false;
 		}
 		resetDataUsageIfTime();
@@ -290,26 +288,6 @@ public class SK2AppSettings extends SKAppSettings {
 //		return isDataCapAlreadyReached();
 //	}
 
-	// http://stackoverflow.com/questions/18393175/how-to-properly-check-android-permission-dynamically
-	//for example, permission can be "android.permission.WRITE_EXTERNAL_STORAGE"
-	public static boolean sHasPermission(String permission)
-	{
-		try {
-			Context context = SKApplication.getAppInstance().getApplicationContext();
-			PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
-			if (info.requestedPermissions != null) {
-				for (String p : info.requestedPermissions) {
-					if (p.equals(permission)) {
-						return true;
-					}
-				}
-			}
-		} catch (Exception e) {
-			SKLogger.sAssert(false);
-		}
-		return false;
-	}
-
 	public LocationType getLocationServiceType() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 		if (prefs.contains(SKConstants.PREF_LOCATION_TYPE)) {
@@ -318,12 +296,7 @@ public class SK2AppSettings extends SKAppSettings {
 			if(pref == null){
 				return null;
 			}
-
-			if (SK2AppSettings.sHasPermission("android.permission.ACCESS_FINE_LOCATION") == false) {
-				// IF app doesn't support GPS, then FORCE use of network provider version!
-				return LocationType.network;
-			}
-
+			
 			if(pref.equals(ctx.getString(R.string.GPS))) {
 				return LocationType.gps;
 			}
@@ -347,7 +320,7 @@ public class SK2AppSettings extends SKAppSettings {
 	
 	//Returns a Map containing all the json entries to be added when submitting the results
 	public Map<String,Object> getJSONExtra(){
-		Map<String, Object> ret= new HashMap<>();
+		Map<String, Object> ret= new HashMap<String,Object>();
 		if(!anonymous && getUnitId() != null){
 			ret.put(JSON_UNIT_ID, getUnitId());
 			

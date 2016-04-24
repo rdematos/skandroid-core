@@ -20,8 +20,7 @@ public class PhoneIdentityData implements DCSData{
 	public static final String JSON_MODEL = "model";
 	public static final String JSON_OSTYPE = "os_type";
 	public static final String JSON_OSVERSION = "os_version";
-	public static final String JSON_OSVERSION_ANDROID = "os_version_android";
-
+	
 	
 	public String imei;
 	public long time;
@@ -29,12 +28,11 @@ public class PhoneIdentityData implements DCSData{
 	public String manufacturer;
 	public String model;
 	public String osType;
-	public int osVersion; // e.g. The Android API level, e.g. 16
-	public String osVersionAndroid; // e.g. "4.1.1"
-
+	public int osVersion;
+	
 	@Override
 	public List<String> convert() {
-		List<String> list = new ArrayList<>();
+		List<String> list = new ArrayList<String>();
 		
 		DCSStringBuilder builder = new DCSStringBuilder();
 		builder.append("PHONEIDENTITY");
@@ -45,7 +43,6 @@ public class PhoneIdentityData implements DCSData{
 		builder.append(model);
 		builder.append(osType);
 		builder.append(osVersion);
-		builder.append(osVersionAndroid);
 		list.add(builder.build());
 		
 		return list;
@@ -53,7 +50,7 @@ public class PhoneIdentityData implements DCSData{
 
 	@Override
 	public List<JSONObject> getPassiveMetric() {
-		List<JSONObject> ret = new ArrayList<>();
+		List<JSONObject> ret = new ArrayList<JSONObject>();
 		long time = System.currentTimeMillis();
 		if(!SK2AppSettings.getSK2AppSettingsInstance().anonymous){
       if (imei != null) {
@@ -67,23 +64,21 @@ public class PhoneIdentityData implements DCSData{
 		ret.add(PassiveMetric.create(PassiveMetric.METRIC_TYPE.MODEL, time, model));
 		ret.add(PassiveMetric.create(PassiveMetric.METRIC_TYPE.OSTYPE, time, osType ));
 		ret.add(PassiveMetric.create(PassiveMetric.METRIC_TYPE.OSVERSION, time, osVersion));
-		ret.add(PassiveMetric.create(PassiveMetric.METRIC_TYPE.ANDROIDBUILDVERSION, time, osVersionAndroid));
 		return ret;
 	}
 	
 	@Override
 	public List<JSONObject> convertToJSON() {
-		List<JSONObject> ret = new ArrayList<>();
-		Map<String, Object> j = new HashMap<>();
+		List<JSONObject> ret = new ArrayList<JSONObject>();
+		Map<String, Object> j = new HashMap<String, Object>();
 		j.put(JSON_TYPE, JSON_TYPE_PHONE_IDENTITY);
 		collectSensitiveData(j);
-		j.put(JSON_TIMESTAMP, time / 1000);
+		j.put(JSON_TIMESTAMP, time/1000);
 		j.put(JSON_DATETIME, SKDateFormat.sGetDateAsIso8601String(new java.util.Date(time)));
 		j.put(JSON_MANUFACTURER, manufacturer);
 		j.put(JSON_MODEL, model);
 		j.put(JSON_OSTYPE, osType);
 		j.put(JSON_OSVERSION, osVersion);
-		j.put(JSON_OSVERSION_ANDROID, osVersionAndroid);
 		ret.add(new JSONObject(j));
 		
 		return ret;

@@ -16,8 +16,6 @@
 
 package com.loopj.android.http;
 
-import com.samknows.libcore.SKLogger;
-
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -536,7 +534,7 @@ public class Base64 {
         encoder.output = new byte[output_len];
         encoder.process(input, offset, len, true);
 
-        SKLogger.sAssert(encoder.op == output_len);
+        assert encoder.op == output_len;
 
         return encoder.output;
     }
@@ -718,8 +716,8 @@ public class Base64 {
                     output[op++] = '\n';
                 }
 
-                SKLogger.sAssert(tailLen == 0);
-                SKLogger.sAssert(p == len);
+                assert tailLen == 0;
+                assert p == len;
             } else {
                 // Save the leftovers in tail to be consumed on the next
                 // call to encodeInternal.

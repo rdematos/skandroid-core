@@ -1,0 +1,126 @@
+[
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_top_button.xml",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_top_button.xml"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_button_grey_normal.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_button_grey_normal.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_icon.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_icon.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_picker_list_longpressed.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_picker_list_longpressed.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_profile_picture_blank_portrait.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_profile_picture_blank_portrait.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_loginbutton_blue_focused.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_loginbutton_blue_focused.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_loginbutton_blue.xml",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_loginbutton_blue.xml"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_loginbutton_blue_normal.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_loginbutton_blue_normal.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_loginbutton_blue_pressed.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_loginbutton_blue_pressed.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_profile_default_icon.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_profile_default_icon.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_picker_list_pressed.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_picker_list_pressed.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_list_section_header_background.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_list_section_header_background.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_picker_list_selector_background_transition.xml",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_picker_list_selector_background_transition.xml"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_close.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_close.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_place_default_icon.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_place_default_icon.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_picker_list_selector_disabled.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_picker_list_selector_disabled.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_button_grey_pressed.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_button_grey_pressed.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_picker_top_button.xml",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_picker_top_button.xml"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_picker_list_selector.xml",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_picker_list_selector.xml"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_usersettingsfragment_background_gradient.xml",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_usersettingsfragment_background_gradient.xml"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_picker_list_focused.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_picker_list_focused.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_top_background.xml",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_top_background.xml"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_logo.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_logo.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_list_divider.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_list_divider.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_button_check_off.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_button_check_off.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_button_check.xml",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_button_check.xml"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_picker_item_background.xml",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_picker_item_background.xml"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_button_check_on.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_button_check_on.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_button_grey_focused.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_button_grey_focused.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_loginbutton_silver.xml",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_loginbutton_silver.xml"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable/com_facebook_profile_picture_blank_square.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable/com_facebook_profile_picture_blank_square.png"
+    }
+]

@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable-ldpi-v4/com_facebook_close.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable-ldpi-v4/com_facebook_close.png"
+    },
+    {
+        "merged": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/res/merged/androidTest/debug/drawable-ldpi-v4/com_facebook_icon.png",
+        "source": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/facebook-android-sdk-3.0.2/facebook/build/intermediates/bundles/debug/res/drawable-ldpi-v4/com_facebook_icon.png"
+    }
+]

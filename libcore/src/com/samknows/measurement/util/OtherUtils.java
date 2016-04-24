@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.ByteArrayInputStream;
@@ -12,6 +13,8 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 
@@ -34,11 +37,58 @@ import com.samknows.libcore.SKConstants;
 import com.samknows.measurement.SK2AppSettings;
 import com.samknows.measurement.DeviceDescription;
 import com.samknows.measurement.MainService;
+import com.samknows.libcore.R;
 import com.samknows.measurement.environment.PhoneIdentityDataCollector;
+import com.samknows.measurement.statemachine.State;
+import com.samknows.measurement.storage.Conversions;
+import com.samknows.measurement.test.ScheduledTestExecutionQueue;
 
 public class OtherUtils {
   static final String TAG = "OtherUtils";
 
+	public static String formatToBytes(long bytes) {
+		double data = bytes;
+		if (data > 1024*1024) { 
+			data /= 1024d;
+			data /= 1024d;
+			return String.format("%.2fMB", data);
+		} else if (data > 1024) {
+			data /= 1024d;
+			return String.format("%.2fKB", data);
+		} else {
+			return bytes + "B";
+		}
+	}
+	
+	public static double sConvertBytesPerSecondToMbps1024Based(double bytesPerSecond) {
+		  return bytesPerSecond * 8.0 / (1024.0 * 1024.0);
+	}
+
+	public static double sConvertMbps1024BasedToMBps1000Based(double value1024Based) {
+		return value1024Based * (1024.0 * 1024.0) / (1000.0 * 1000.0);
+	}
+	
+	public static String sBitrateMbps1024BasedToString (double bitrateMbps1024Based) {
+		double bitrateMbps1000Based = sConvertMbps1024BasedToMBps1000Based(bitrateMbps1024Based);
+		double bitrateBitsPerSecond = 1000000.0 * bitrateMbps1000Based;
+		  
+		return Conversions.throughputToString(bitrateBitsPerSecond);
+	}
+
+	public static String formatToBits(long bytes) {
+		double data = bytes;
+		data *= 8;
+		if (data > 1000*1000) { 
+			data /= 1000d;
+			data /= 1000d;
+			return String.format("%.2fMb", data);
+		} else if (data > 1000) {
+			data /= 1000d;
+			return String.format("%.2fKb", data);
+		} else {
+			return bytes + "b";
+		}
+	}
 
 	public static void reschedule(Context ctx, long timeDurationMilliseconds){
 		long actualSystemTimeMilliseconds;
@@ -115,7 +165,7 @@ public class OtherUtils {
 				for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
 					InetAddress inetAddress = enumIpAddr.nextElement();
 					if (!inetAddress.isLoopbackAddress()) {
-						return inetAddress.getHostAddress();
+						return inetAddress.getHostAddress().toString();
 					}
 				}
 			}
@@ -128,6 +178,14 @@ public class OtherUtils {
 	public static boolean isRoaming(Context ctx) {
 		TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
 		return tm.isNetworkRoaming();
+	}
+
+	public static boolean isWifi(Context ctx) {
+		NetworkInfo info = ((ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+		if (info != null) {
+			return info.getType() == ConnectivityManager.TYPE_WIFI;
+		}
+		return false;
 	}
 
   public static boolean isPhoneAssosiated(Context ctx) {
@@ -172,16 +230,13 @@ public class OtherUtils {
 
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
-			// Note that when using Roboelectic, this will return null!
-			if (signatures != null) {
-        for (Signature signature : signatures) {
-          ByteArrayInputStream stream = new ByteArrayInputStream(signature.toByteArray());
-          X509Certificate cert = (X509Certificate) cf.generateCertificate(stream);
-          debuggable = cert.getSubjectX500Principal().equals(DEBUG_DN);
-          if (debuggable) {
-            break;
-          }
-        }
+			for ( int i = 0; i < signatures.length;i++)
+			{   
+				ByteArrayInputStream stream = new ByteArrayInputStream(signatures[i].toByteArray());
+				X509Certificate cert = (X509Certificate) cf.generateCertificate(stream);       
+				debuggable = cert.getSubjectX500Principal().equals(DEBUG_DN);
+				if (debuggable)
+					break;
 			}
 		}
 		catch (NameNotFoundException e)
@@ -192,10 +247,6 @@ public class OtherUtils {
 		{
 			//debuggable variable will remain false
 		}
-		catch (Exception e) {
-			// Don't call SKLogger, as that could be recursive!
-			// SKLogger.sAssert(false);
-	  }
 		return debuggable;
 	}
 

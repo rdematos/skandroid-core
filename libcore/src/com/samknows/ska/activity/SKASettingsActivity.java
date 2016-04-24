@@ -41,7 +41,6 @@ import com.samknows.measurement.environment.NetworkData;
 import com.samknows.measurement.environment.NetworkDataCollector;
 import com.samknows.measurement.environment.PhoneIdentityData;
 import com.samknows.measurement.environment.PhoneIdentityDataCollector;
-import com.samknows.measurement.environment.Reachability;
 import com.samknows.measurement.schedule.ScheduleConfig;
 import com.samknows.measurement.storage.DBHelper;
 import com.samknows.measurement.util.DCSConvertorUtil;
@@ -70,13 +69,13 @@ public class SKASettingsActivity extends BaseLogoutActivity{
     // Shown when the background test is already running, so we cannot clear
     // data at the moment...
     void showAlertCannotClearDataAsBackgroundTaskIsRunning () {
-      showAlertForTestWithMessageBody(getString(R.string.must_wait_for_test_to_run));
+      showAlertForTestWithMessageBody (getString(R.string.must_wait_for_test_to_run));
     }
     
 	
 	private boolean checkIfIsConnectedAndIfNotShowAnAlert() {
 		
-		if (Reachability.sGetIsConnected() == true) {
+		if (NetworkDataCollector.sGetIsConnected() == true) {
 			return true;
 		}
 	
@@ -114,7 +113,7 @@ public class SKASettingsActivity extends BaseLogoutActivity{
 		try {
 			versionName = this.getPackageManager().getPackageInfo(this.getPackageName(), 0 ).versionName;
 		} catch (NameNotFoundException e) {
-      SKLogger.sAssert(false);
+			SKLogger.sAssert(getClass(), false);
 		}
 		if (findViewById(R.id.version) != null) {
 			TextView tv=(TextView) findViewById(R.id.version);
@@ -213,16 +212,12 @@ public class SKASettingsActivity extends BaseLogoutActivity{
 		FontFitTextView locationServicesTypeButtonText = null;
 		try {
 			locationServicesTypeButtonText = (FontFitTextView) findViewById(R.id.settings_location_services_type_text);
-		} catch (NoSuchFieldError e) {
-			SKLogger.sAssert(false);
-		}
+		} catch (NoSuchFieldError e) { }
 		
 		ButtonWithRightArrow locationServicesTypeButton = null;
 		try {
     		locationServicesTypeButton = (ButtonWithRightArrow) findViewById(R.id.settings_location_services_type);
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 		
 		String theValue = SK2AppSettings.getSK2AppSettingsInstance().getLocationTypeAsString();
 		if (locationServicesTypeButtonText != null) {
@@ -295,9 +290,7 @@ public class SKASettingsActivity extends BaseLogoutActivity{
 		
 		try {
 			((TextView)findViewById(R.id.tv_service_activated_value)).setText(value);
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 		
 		if(SKApplication.getAppInstance().getIsBackgroundTestingEnabledInUserPreferences()){
 			value = getString(R.string.enabled);
@@ -307,24 +300,18 @@ public class SKASettingsActivity extends BaseLogoutActivity{
 		
 		try {
 			((TextView)findViewById(R.id.tv_service_autotesting_value)).setText(value);
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 		
 		try {
 			((TextView)findViewById(R.id.tv_service_status_value)).setText(getString(SK2AppSettings.getSK2AppSettingsInstance().getState().sId));
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 
 		ScheduleConfig config = CachingStorage.getInstance().loadScheduleConfig();
 		String schedule_version = config == null ? "" : config.getConfigVersion(); 
 		
 		try {
 			((TextView)findViewById(R.id.schedule_version)).setText(schedule_version);
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 
 		String nextTestScheduled = "";
 		if (MainService.isExecuting()) {
@@ -339,75 +326,53 @@ public class SKASettingsActivity extends BaseLogoutActivity{
 		}
 		try {
 			((TextView)findViewById(R.id.tv_scheduledFor_value)).setText(nextTestScheduled);
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 
 		if (SKApplication.getAppInstance().getIsBackgroundProcessingEnabledInTheSchedule() == false) {
 			// Background processing disabled in the schedule!
 			try {
 				findViewById(R.id.autotesting_row).setVisibility(View.GONE);
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 			try {
 				findViewById(R.id.next_test_scheduled_for_row).setVisibility(View.GONE);
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 		}
 
 		PhoneIdentityData phoneData = new PhoneIdentityDataCollector(this).collect();
 		if (!SK2AppSettings.getSK2AppSettingsInstance().anonymous){
 			try {
 				((TextView)findViewById(R.id.tv_imei_value)).setText(phoneData.imei + "");
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 			try {
 				((TextView)findViewById(R.id.tv_imsi_value)).setText(phoneData.imsi + "");
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 			try {
 				((TextView)findViewById(R.id.tv_unitId_value)).setText(SK2AppSettings.getInstance().getUnitId());
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 		}
 
 		value = phoneData.manufacturer + "\n\r" + phoneData.model;
 		try {
 			((TextView)findViewById(R.id.tv_phone_value)).setText(value);
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 		value = phoneData.osType + " v" + phoneData.osVersion;
 		try {
 			((TextView)findViewById(R.id.tv_os_value)).setText(value);
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 
 		NetworkData networkData = new NetworkDataCollector(this).collect();
 		value = DCSConvertorUtil.convertPhoneType(networkData.phoneType);
 		try {
 			((TextView)findViewById(R.id.tv_phone_type_value)).setText(value);
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 		value = getString(DCSConvertorUtil.networkTypeToStringId(networkData.networkType));
 		try {
 			((TextView)findViewById(R.id.tv_network_type_value)).setText(value);
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 		value = networkData.networkOperatorCode + "/" + networkData.networkOperatorName;
 		try {
 			((TextView)findViewById(R.id.tv_network_operator_value)).setText(value);
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 		
 		if(networkData.isRoaming){
 			value = getString(R.string.yes);
@@ -416,9 +381,7 @@ public class SKASettingsActivity extends BaseLogoutActivity{
 		}
 		try {
 			((TextView)findViewById(R.id.tv_roaming_value)).setText(value);
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 
 		Location loc1 = ((LocationManager)getSystemService(LOCATION_SERVICE)).getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		Location loc2 = ((LocationManager)getSystemService(LOCATION_SERVICE)).getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -431,29 +394,19 @@ public class SKASettingsActivity extends BaseLogoutActivity{
 		if (loc != null) {
 			try {
 				((TextView)findViewById(R.id.tv_loc_date_value)).setText(new SKDateFormat(this).UITime(loc.getTime()));
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 			try {
 				((TextView)findViewById(R.id.tv_loc_provider_value)).setText(loc.getProvider());
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 			try {
 				((TextView)findViewById(R.id.tv_loc_long_value)).setText(String.format("%1.5f", loc.getLongitude()));
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 			try {
 				((TextView)findViewById(R.id.tv_loc_lat_value)).setText(String.format("%1.5f", loc.getLatitude()));
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 			try {
 				((TextView)findViewById(R.id.tv_loc_acc_value)).setText(loc.getAccuracy() + " m");
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 		}
 
 
@@ -465,25 +418,17 @@ public class SKASettingsActivity extends BaseLogoutActivity{
 			GsmCellLocation gsmLocation = (GsmCellLocation) cellData.getCellLocation();
 			try {
 				((TextView)findViewById(R.id.tv_cell_tower_type_value)).setText("GSM");
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 			try {
 				((TextView)findViewById(R.id.tv_cell_id_value)).setText("" + gsmLocation.getCid());
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 			try {
 				((TextView)findViewById(R.id.tv_area_code_value)).setText("" + gsmLocation.getLac());
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 		} else if (cellData.getCellLocation() instanceof CdmaCellLocation) {
 			try {
 				((TextView)findViewById(R.id.tv_cell_tower_type_value)).setText("CDMA");
-			} catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
-      }
+			} catch (NoSuchFieldError e) { }
 			//			CdmaCellLocation cdmaLocation = (CdmaCellLocation) cellLocation;
 			//			builder.append(CDMA);
 			//			builder.append(time/1000);
@@ -507,9 +452,7 @@ public class SKASettingsActivity extends BaseLogoutActivity{
 
 		try {
 			((TextView) findViewById(R.id.tv_signal_value)).setText(value);
-		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
-    }
+		} catch (NoSuchFieldError e) { }
 		// Note: neighbors might be NULL...
 		if (cellData.getNeighbors() != null) {
 			for (NeighboringCellInfo info : cellData.getNeighbors()) {
@@ -526,7 +469,6 @@ public class SKASettingsActivity extends BaseLogoutActivity{
 				return;
 			}
 		} catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
 			return;
 		}
 		

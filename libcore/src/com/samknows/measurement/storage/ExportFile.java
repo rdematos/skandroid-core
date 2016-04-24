@@ -77,7 +77,7 @@ public class ExportFile {
 	
 	private static final Map<String, String[]> convertor;
 	static{
-		Map <String, String[]> aMap = new HashMap<>();
+		Map <String, String[]> aMap = new HashMap<String, String[]>();
 		aMap.put(HttpTest.DOWNSTREAMMULTI, HTTP_FIELDS);
 		aMap.put(HttpTest.DOWNSTREAMSINGLE, HTTP_FIELDS);
 		aMap.put(HttpTest.UPSTREAMMULTI, HTTP_FIELDS);
@@ -240,6 +240,7 @@ public class ExportFile {
 			os = null;
 		}catch(IOException e){
 			SKLogger.e(ExportFile.class, "Unable to save json array to file" + resultsJSONFile.getPath(), e);
+			return;
 		}
 	}
 	
@@ -260,8 +261,9 @@ public class ExportFile {
 			return fileArray;
 		}
 		Log.d("Files", "Size: "+ fileArray.length);
-		for (File aFileArray : fileArray) {
-			Log.d("Files", "FileName:" + aFileArray.getName());
+		for (int i=0; i < fileArray.length; i++)
+		{
+		    Log.d("Files", "FileName:" + fileArray[i].getName());
 		}
 		
 		return fileArray;

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string msgid="8472377992819116328" name="auth_client_availability_notification_title">"የGoogle Play አገልግሎቶችን ይጫኑ/ያዘምኑ/ያንቁ"</string>
+    <string msgid="3635065018897986478" name="auth_client_play_services_err_notification_msg">"የGoogle Play አገልግሎቶች ስህተት"</string>
+    <string msgid="6304135633531965756" name="auth_client_requested_by_msg">"በ<ns1:g id="APP_NAME">%1$s</ns1:g> የተጠየቀ"</string>
+    <string msgid="4181637455539816337" name="common_google_play_services_enable_button">"Google Play አገልግሎቶችን አንቃ"</string>
+    <string msgid="7627896071867667758" name="common_google_play_services_enable_text">"Google Play አገልግሎቶችን እስካላነቁ ድረስ ይህ መተግበሪያ አይሰራም።"</string>
+    <string msgid="529078775174559253" name="common_google_play_services_enable_title">"Google Play አገልግሎቶችን አንቃ"</string>
+    <string msgid="8515591849428043265" name="common_google_play_services_install_button">"Google Play አገልግሎቶችን አግኝ"</string>
+    <string msgid="8685301130651051380" name="common_google_play_services_install_text_phone">"ይህ መተግበሪያ ያለ Google Play አገልግሎቶች አይሰራም፣ እነሱ ደግሞ ስልክዎ ላይ የሉም።"</string>
+    <string msgid="1589957570365247855" name="common_google_play_services_install_text_tablet">"ይህ መተግበሪያ ያለ Google Play አገልግሎቶች አይሰራም፣ እነሱ ደግሞ ጡባዊዎ ላይ የሉም።"</string>
+    <string msgid="26645092511305524" name="common_google_play_services_install_title">"Google Play አገልግሎቶችን አግኝ"</string>
+    <string msgid="4762332809710093730" name="common_google_play_services_unknown_issue">"በGoogle Play አገልግሎቶች ላይ ያልታወቀ ችግር።"</string>
+    <string msgid="3542578567569488671" name="common_google_play_services_unsupported_text">"የGoogle Play አገልግሎቶች፣ አንዳንድ መተግበሪያዎችዎ በእሱ ላይ ጥገኛ የሆኑት፣ በመሣሪያዎ አይደገፍም። እባክዎ ለእርዳታ አምራቹን ያግኙ።"</string>
+    <string msgid="6334768798839376943" name="common_google_play_services_unsupported_title">"Google Play አገልግሎቶች"</string>
+    <string msgid="8932944190611227642" name="common_google_play_services_update_button">"ያዘምኑ"</string>
+    <string msgid="448354684997260580" name="common_google_play_services_update_text">"Google Play አገልግሎቶችን እስኪያዘምኑ ድረስ ይህ መተግበሪያ አይሰራም።"</string>
+    <string msgid="6006316683626838685" name="common_google_play_services_update_title">"Google Play አገልግሎቶችን ያዘምኑ"</string>
+    <string msgid="2429381841831957106" name="common_signin_button_text_long">"በGoogle ይግቡ"</string>
+</resources>

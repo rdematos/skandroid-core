@@ -1,44 +1,39 @@
 package com.samknows.measurement.net;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.samknows.libcore.SKLogger;
-import com.samknows.libcore.SKSimpleHttpToJsonQuery;
 import com.samknows.measurement.SK2AppSettings;
 import com.samknows.measurement.SKApplication;
-import com.samknows.measurement.environment.LocationDataCollector;
-import com.samknows.measurement.schedule.ScheduleConfig;
 import com.samknows.measurement.storage.DBHelper;
 import com.samknows.measurement.storage.PassiveMetric;
 import com.samknows.measurement.storage.PassiveMetric.METRIC_TYPE;
-import com.samknows.measurement.storage.TestResultsManager;
-import com.samknows.measurement.util.OtherUtils;
+import com.samknows.measurement.test.TestResultsManager;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
+import android.net.ParseException;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.util.Pair;
-
 
 public class SubmitTestResultsAnonymousAction {
   static final String TAG = "SubmitTestResAnymAct";
@@ -85,7 +80,7 @@ public class SubmitTestResultsAnonymousAction {
     List<JSONObject> batches = dbHelper.getTestBatches();
 
     String[] results = TestResultsManager.getJSONDataAsStringArray(context);
-    List<Integer> fail = new ArrayList<>();
+    List<Integer> fail = new ArrayList<Integer>();
     for (int i = 0; i < results.length; i++) {
       byte[] data = new byte[0];
       try {
@@ -115,91 +110,7 @@ public class SubmitTestResultsAnonymousAction {
     }
   }
 
-  // https://code.google.com/p/android/issues/detail?id=38009
-  public static List<Address> getFromLocation(double lat, double lng, int maxResult){
-
-    String address = String.format(Locale.ENGLISH,"http://maps.googleapis.com/maps/api/geocode/json?latlng=%1$f,%2$f&sensor=true&language="+Locale.getDefault().getCountry(), lat, lng);
-    HttpGet httpGet = new HttpGet(address);
-    HttpClient client = new DefaultHttpClient();
-    HttpResponse response;
-    StringBuilder stringBuilder = new StringBuilder();
-
-    List<Address> retList = null;
-
-    try {
-      response = client.execute(httpGet);
-      HttpEntity entity = response.getEntity();
-      InputStream stream = entity.getContent();
-      int b;
-      while ((b = stream.read()) != -1) {
-        stringBuilder.append((char) b);
-      }
-
-      JSONObject jsonObject = new JSONObject();
-      jsonObject = new JSONObject(stringBuilder.toString());
-
-      retList = new ArrayList<>();
-
-      if ("OK".equalsIgnoreCase(jsonObject.getString("status"))
-          && (jsonObject.has("results"))
-         )
-      {
-        JSONArray results = jsonObject.getJSONArray("results");
-
-        if (results.length() > 0) {
-          JSONObject place = results.getJSONObject(0);
-
-          Locale currentLocale = SKApplication.getAppInstance().getApplicationContext().getResources().getConfiguration().locale;
-
-          String cityName = "";
-          String countryName = "";
-
-          //JSONArray array = result.getJSONArray("results");
-          JSONArray components = place.getJSONArray("address_components");
-          for( int i = 0 ; i < components.length() ; i++ ) {
-            JSONObject component = components.getJSONObject(i);
-            JSONArray types = component.getJSONArray("types");
-            for (int j = 0; j < types.length(); j++) {
-              if (types.getString(j).equals("locality")) {
-                cityName = component.getString("long_name");
-              } else if (types.getString(j).equals("country")) {
-                countryName = component.getString("long_name");
-              }
-            }
-          }
-
-          Address addr = new Address(currentLocale);
-
-          //addr.setAddressLine(0, indiStr);
-          addr.setLocality(cityName);
-          addr.setCountryName(countryName);
-
-          retList.add(addr);
-        }
-      }
-
-
-    } catch (ClientProtocolException e) {
-      //Log.e(MyGeocoder.class.getName(), "Error calling Google geocode webservice.", e);
-      SKLogger.sAssert(false);
-    } catch (IOException e) {
-      //Log.e(MyGeocoder.class.getName(), "Error calling Google geocode webservice.", e);
-      SKLogger.sAssert(false);
-    } catch (JSONException e) {
-      //Log.e(MyGeocoder.class.getName(), "Error parsing Google geocode webservice response.", e);
-      SKLogger.sAssert(false);
-    } catch (Exception e) {
-      SKLogger.sAssert(false);
-    }
-
-    return retList;
-  }
-
-
-  private boolean uploadJsonData(final DBHelper dbHelper, List<JSONObject> batches,  byte[] data, String dataAsString) {
-
-    double longitude = -999.0;
-    double latitude = -999.0;
+  private boolean uploadJsonData(DBHelper dbHelper, List<JSONObject> batches,  byte[] data, String dataAsString) {
 
     long batchId = -1;
     JSONObject jObject = null;
@@ -211,7 +122,7 @@ public class SubmitTestResultsAnonymousAction {
         if (jObject.has("batch_id")) {
           try {
             String batchIdAsString = jObject.getString("batch_id");
-            long thisBatchId = Long.valueOf(batchIdAsString);
+            long thisBatchId = Long.valueOf(batchIdAsString).longValue();
 
             //    					long timeStamp = jObject.getLong("timestamp");
             //    					// Finally - do we have have an entry in the database for this?
@@ -226,7 +137,6 @@ public class SubmitTestResultsAnonymousAction {
                 if (theBatchId == thisBatchId) {
                   // Got it!
                   batchId = thisBatchId;
-
                   break;
                 }
               }
@@ -234,39 +144,6 @@ public class SubmitTestResultsAnonymousAction {
             }
           } catch (JSONException e) {
             SKLogger.sAssert(getClass(), false);
-          }
-        }
-
-
-        if (jObject.has("metrics") == false) {
-          SKLogger.sAssert(false);
-        } else {
-          JSONArray metricsArray = jObject.getJSONArray("metrics");
-          int items = metricsArray.length();
-          int metricIndex = 0;
-          for (metricIndex = 0; metricIndex < items; metricIndex++) {
-            JSONObject metric = metricsArray.getJSONObject(metricIndex);
-            if (metric.has("type")) {
-              if (metric.getString("type").equals("location")) {
-                if (metric.has("latitude")) {
-                  Double latitudeAsDouble = metric.getDouble("latitude");
-                  latitude = latitudeAsDouble;
-
-                  if (metric.has("longitude")) {
-                    Double longitudeAsDouble = metric.getDouble("longitude");
-                    longitude = longitudeAsDouble;
-                  } else {
-                    SKLogger.sAssert(false);
-                  }
-                } else {
-                  SKLogger.sAssert(false);
-                }
-
-                break;
-              }
-            } else {
-              SKLogger.sAssert(false);
-            }
           }
         }
       }
@@ -326,185 +203,84 @@ public class SubmitTestResultsAnonymousAction {
       }
     }
 
-    final long finalBatchId = batchId;
+    HttpPost httpPost = new HttpPost(fullUploadUrl);
+    httpPost.setEntity(new ByteArrayEntity(data));
 
-    // Get Geocoder data!
-    if ((longitude == -999.0) && (latitude == -999.0)) {
-      Pair<Location,ScheduleConfig.LocationType> lastLocationPair = LocationDataCollector.sGetLastKnownLocation();
-      if (lastLocationPair != null) {
-        Location lastLocation = lastLocationPair.first;
-        if (lastLocation != null) {
-          latitude = lastLocation.getLatitude();
-          longitude = lastLocation.getLongitude();
+    HttpContext httpContext = new BasicHttpContext();
+    httpContext.setAttribute("Content-Length", data.length);
+    try {
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpResponse httpResponse = httpClient.execute(httpPost);
+      StatusLine sl = httpResponse.getStatusLine();
+      isSuccess = sl.getStatusCode() == HttpStatus.SC_OK
+          && sl.getReasonPhrase().equals("OK");
+      int code = sl.getStatusCode();
+      Log.d(TAG, "submitting test results to server: " + isSuccess);
+
+      // http://stackoverflow.com/questions/15704715/getting-json-response-android
+      HttpEntity entity = httpResponse.getEntity();
+      if (entity != null) {
+        try {
+          String jsonString = EntityUtils.toString(entity);
+          // e.g. {"public_ip":"89.105.103.193","submission_id":"58e80db491ee3f7a893aee307dc7f5e1"}
+          Log.d(TAG, "Process response from server as string, to extract data from the JSON!: " + jsonString);
+
+          JSONObject jsonResponse = new JSONObject(jsonString);
+
+          if (batchId != -1) {
+
+            JSONObject item1 = new JSONObject();
+            try {
+              item1.put(PassiveMetric.JSON_METRIC_NAME, "public_ip");
+              item1.put(PassiveMetric.JSON_DTIME, System.currentTimeMillis());
+              item1.put(PassiveMetric.JSON_VALUE, jsonResponse.get("public_ip"));
+              item1.put(PassiveMetric.JSON_TYPE, METRIC_TYPE.PUBLICIP);
+            } catch (JSONException e) {
+              SKLogger.sAssert(getClass(), false);
+            }
+
+
+            JSONObject item2 = new JSONObject();
+            try {
+              item2.put(PassiveMetric.JSON_METRIC_NAME, "submission_id");
+              item2.put(PassiveMetric.JSON_DTIME, System.currentTimeMillis());
+              item2.put(PassiveMetric.JSON_VALUE, jsonResponse.get("submission_id"));
+              item2.put(PassiveMetric.JSON_TYPE, METRIC_TYPE.SUBMISSIONID);
+
+              SKApplication.getAppInstance().mLastPublicIp = jsonResponse.get("public_ip").toString();
+              SKApplication.getAppInstance().mLastSubmissionId = jsonResponse.get("submission_id").toString();
+            } catch (JSONException e) {
+              SKLogger.sAssert(getClass(), false);
+            }
+
+//							metric_type = metric.getString(PassiveMetric.JSON_METRIC_NAME);
+//							dtime = metric.getLong(PassiveMetric.JSON_DTIME);
+//							value = metric.getString(PassiveMetric.JSON_VALUE);
+//							type = metric.getString(PassiveMetric.JSON_TYPE);
+//							insertPassiveMetric(metric_type, type, dtime, value
+
+            JSONArray jsonArray = new JSONArray();
+
+            jsonArray.put(item1);
+            jsonArray.put(item2);
+            dbHelper.insertPassiveMetric(jsonArray, batchId);
+
+            // Force the History screen to re-query, so it can show the submission id/public ip
+            LocalBroadcastManager.getInstance(SKApplication.getAppInstance().getApplicationContext()).sendBroadcast(new Intent("refreshUIMessage"));
+          }
+
+        } catch (ParseException e) {
+          SKLogger.sAssert(getClass(), false);
+        } catch (IOException e) {
+          SKLogger.sAssert(getClass(), false);
         }
       }
-
-      /*
-      LocationManager manager = (LocationManager) SKApplication.getAppInstance().getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-      if (manager == null) {
-        SKLogger.sAssert(false);
-      } else {
-        Location location = manager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-        if (location == null) {
-          location = manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        }
-        if (location == null) {
-          location = manager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-        }
-        if (location != null) {
-          latitude = location.getLatitude();
-          longitude = location.getLongitude();
-        }
-      }
-      */
+    } catch (Exception e) {
+      SKLogger.e(this, "failed to submit results to server", e);
+      isSuccess = false;
     }
-
-    if ((longitude != -999.0) && (latitude != -999.0))
-    {
-      //
-      // There are TWO ways to get geolocation data.
-      // 1) The first one is to use the Geocoder API - but that is very unreliable!
-      // 2) The second one uses an http query direct to Google.
-      //
-
-      //
-      // 1) First approach - use the Geocoder API - it works sometimes!
-      //
-
-      List<Address> addressList = null;
-      Geocoder geocoder = new Geocoder(SKApplication.getAppInstance().getApplicationContext(), Locale.getDefault());
-      if (geocoder == null) {
-        SKLogger.sAssert(false);
-      } else {
-        if (geocoder.isPresent() == false) {
-          // Maybe we're on the Emulator!
-          SKLogger.sAssert(OtherUtils.isThisDeviceAnEmulator() == true);
-        } else {
-          try {
-            addressList = geocoder.getFromLocation(latitude, longitude, 1);
-
-          } catch (IOException e) {
-            // https://code.google.com/p/android/issues/detail?id=38009
-            // This is quite a common problem!
-            //Log.e("LocationData", "Unable connect to Geocoder", e);
-            //SKLogger.sAssert(false);
-          }
-        }
-      }
-
-      //
-      // 2) Second approach - use an http query direct to Google.
-      //
-
-      if (addressList == null || addressList.size() == 0) {
-        // https://code.google.com/p/android/issues/detail?id=38009
-        addressList = getFromLocation(latitude, longitude, 1);
-      }
-
-      if (addressList != null) {
-        processGeocoderAddressList(dbHelper, finalBatchId, addressList);
-      }
-    }
-
-    isSuccess = false;
-
-    SKSimpleHttpToJsonQuery httpToJsonQuery = new SKSimpleHttpToJsonQuery(fullUploadUrl, data, new SKSimpleHttpToJsonQuery.QueryCompletion() {
-      @Override
-      public void OnQueryCompleted(boolean queryWasSuccessful, final JSONObject jsonResponse) {
-        if (finalBatchId != -1) {
-          isSuccess = true;
-
-          JSONObject item1 = new JSONObject();
-          try {
-            item1.put(PassiveMetric.JSON_METRIC_NAME, "public_ip");
-            item1.put(PassiveMetric.JSON_DTIME, System.currentTimeMillis());
-            item1.put(PassiveMetric.JSON_VALUE, jsonResponse.get("public_ip"));
-            item1.put(PassiveMetric.JSON_TYPE, METRIC_TYPE.PUBLICIP);
-          } catch (JSONException e) {
-            SKLogger.sAssert(getClass(), false);
-          }
-
-
-          JSONObject item2 = new JSONObject();
-          try {
-            item2.put(PassiveMetric.JSON_METRIC_NAME, "submission_id");
-            item2.put(PassiveMetric.JSON_DTIME, System.currentTimeMillis());
-            item2.put(PassiveMetric.JSON_VALUE, jsonResponse.get("submission_id"));
-            item2.put(PassiveMetric.JSON_TYPE, METRIC_TYPE.SUBMISSIONID);
-
-            SKApplication.getAppInstance().mLastPublicIp = jsonResponse.get("public_ip").toString();
-            SKApplication.getAppInstance().mLastSubmissionId = jsonResponse.get("submission_id").toString();
-          } catch (JSONException e) {
-            SKLogger.sAssert(getClass(), false);
-          }
-
-          JSONArray jsonArray = new JSONArray();
-
-          jsonArray.put(item1);
-          jsonArray.put(item2);
-          dbHelper.insertPassiveMetric(jsonArray, finalBatchId);
-
-          // Force the History screen to re-query, so it can show the submission id/public ip
-          LocalBroadcastManager.getInstance(SKApplication.getAppInstance().getApplicationContext()).sendBroadcast(new Intent("refreshUIMessage"));
-        }
-
-      }
-    });
-
-    httpToJsonQuery.doPerformQuery();
 
     return isSuccess;
-  }
-
-  private void processGeocoderAddressList(DBHelper dbHelper, long finalBatchId, List<Address> addressList) {
-    if (addressList != null && addressList.size() > 0) {
-      Address address = addressList.get(0);
-      String city = address.getLocality();
-      String country = address.getCountryName();
-
-      String muncipality = city;
-      JSONObject item1 = null;
-      if (muncipality != null) {
-        item1 = new JSONObject();
-        try {
-          item1.put(PassiveMetric.JSON_METRIC_NAME, "municipality");
-          item1.put(PassiveMetric.JSON_DTIME, System.currentTimeMillis());
-          item1.put(PassiveMetric.JSON_VALUE, muncipality);
-          item1.put(PassiveMetric.JSON_TYPE, METRIC_TYPE.MUNICIPALITY);
-        } catch (JSONException e) {
-          SKLogger.sAssert(getClass(), false);
-        }
-      }
-
-      String countryName = country;
-      JSONObject item2 = null;
-      if (countryName != null) {
-        item2 = new JSONObject();
-        try {
-          item2.put(PassiveMetric.JSON_METRIC_NAME, "country_name");
-          item2.put(PassiveMetric.JSON_DTIME, System.currentTimeMillis());
-          item2.put(PassiveMetric.JSON_VALUE, countryName);
-          item2.put(PassiveMetric.JSON_TYPE, METRIC_TYPE.COUNTRYNAME);
-        } catch (JSONException e) {
-          SKLogger.sAssert(getClass(), false);
-        }
-      }
-
-      if (item1 != null || item2 != null) {
-        JSONArray jsonArray = new JSONArray();
-
-        if (item1 != null) {
-          jsonArray.put(item1);
-        }
-
-        if (item2 != null) {
-          jsonArray.put(item2);
-        }
-        dbHelper.insertPassiveMetric(jsonArray, finalBatchId);
-      }
-    } else {
-      SKLogger.sAssert(false);
-    }
   }
 
   private String privateBuildUrl() {

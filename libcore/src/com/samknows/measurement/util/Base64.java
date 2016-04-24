@@ -1172,11 +1172,7 @@ public class Base64
         }   // end catch: IOException
         finally
         {
-            try {
-              bos.close();
-            } catch( Exception e) {
-              SKLogger.sAssert(false);
-            }
+            try{ bos.close(); } catch( Exception e ){}
         }   // end finally
         
         return success;
@@ -1209,11 +1205,7 @@ public class Base64
         }   // end catch: IOException
         finally
         {
-          try {
-            bos.close();
-          } catch( Exception e) {
-            SKLogger.sAssert(false);
-          }
+                try{ bos.close(); } catch( Exception e ){}
         }   // end finally
         
         return success;
@@ -1271,11 +1263,7 @@ public class Base64
         }   // end catch: IOException
         finally
         {
-          try {
-            bis.close();
-          } catch( Exception e) {
-            SKLogger.sAssert(false);
-          }
+            try{ bis.close(); } catch( Exception e) {}
         }   // end finally
         
         return decodedData;
@@ -1323,11 +1311,7 @@ public class Base64
         }   // end catch: IOException
         finally
         {
-          try {
-            bis.close();
-          } catch( Exception e) {
-            SKLogger.sAssert(false);
-          }
+            try{ bis.close(); } catch( Exception e) {}
         }   // end finally
         
         return encodedData;

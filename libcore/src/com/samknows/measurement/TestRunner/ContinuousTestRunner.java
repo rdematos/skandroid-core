@@ -6,23 +6,23 @@ import com.samknows.libcore.SKLogger;
 import com.samknows.measurement.CachingStorage;
 import com.samknows.measurement.SKApplication;
 import com.samknows.measurement.environment.BaseDataCollector;
-import com.samknows.measurement.environment.EnvBaseDataCollector;
 import com.samknows.measurement.environment.CellTowersDataCollector;
 import com.samknows.measurement.environment.DCSData;
 import com.samknows.measurement.environment.NetworkDataCollector;
 import com.samknows.measurement.environment.PhoneIdentityDataCollector;
 import com.samknows.measurement.schedule.condition.ConditionGroupResult;
-import com.samknows.measurement.environment.LocationDataCollector;
+import com.samknows.measurement.schedule.datacollection.LocationDataCollector;
 import com.samknows.measurement.schedule.ScheduleConfig;
 import com.samknows.measurement.schedule.TestDescription;
 import com.samknows.measurement.SK2AppSettings;
-import com.samknows.measurement.statemachine.state.StateEnum;
+import com.samknows.measurement.statemachine.State;
 import com.samknows.measurement.statemachine.StateResponseCode;
 import com.samknows.measurement.statemachine.Transition;
 import com.samknows.measurement.storage.DBHelper;
 import com.samknows.measurement.storage.TestBatch;
 import com.samknows.measurement.Storage;
-
+import com.samknows.measurement.test.TestContext;
+import com.samknows.measurement.test.TestExecutor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,8 +39,8 @@ import org.json.JSONObject;
 public class ContinuousTestRunner  extends SKTestRunner  implements Runnable {
   private static final String JSON_SUBMISSION_TYPE = "continuous_testing";
   private Context mContext;
-  private StateEnum mPreviousState;
-  private List<EnvBaseDataCollector> mCollectors;
+  private State mPreviousState;
+  private List<BaseDataCollector> mCollectors;
   private LocationDataCollector mLocationDataCollector;
   private List<DCSData> mListDCSData;
   private TestContext mTestContext;
@@ -51,7 +51,7 @@ public class ContinuousTestRunner  extends SKTestRunner  implements Runnable {
     super(observer);
 
     mContext = SKApplication.getAppInstance().getApplicationContext();
-    mListDCSData = new ArrayList<>();
+    mListDCSData = new ArrayList<DCSData>();
     mTestContext = TestContext.createBackgroundTestContext(mContext);
     mDBHelper = new DBHelper(mContext);
   }
@@ -85,7 +85,7 @@ public class ContinuousTestRunner  extends SKTestRunner  implements Runnable {
     StateResponseCode response;
     SK2AppSettings appSettings = SK2AppSettings.getSK2AppSettingsInstance();
     mPreviousState = appSettings.getState();
-    StateEnum state = StateEnum.EXECUTE_QUEUE;
+    State state = State.EXECUTE_QUEUE;
     appSettings.saveState(state);
     try {
       response = Transition.createState(state, mContext).executeState();
@@ -118,7 +118,7 @@ public class ContinuousTestRunner  extends SKTestRunner  implements Runnable {
       executeBatch();
 
       try {
-        state = StateEnum.SUBMIT_RESULTS_ANONYMOUS;
+        state = State.SUBMIT_RESULTS_ANONYMOUS;
         response = Transition.createState(state, mContext).executeState();
       } catch (Exception e) {
         SKLogger.e(this, "fail to execute " + state + " ");
@@ -143,10 +143,10 @@ public class ContinuousTestRunner  extends SKTestRunner  implements Runnable {
     TestContext tc = mTestContext;
     long startTime = System.currentTimeMillis();
 
-    List<JSONObject> testsResults = new ArrayList<>();
-    List<JSONObject> passiveMetrics = new ArrayList<>();
+    List<JSONObject> testsResults = new ArrayList<JSONObject>();
+    List<JSONObject> passiveMetrics = new ArrayList<JSONObject>();
 
-    HashMap<String, Object> batch = new HashMap<>();
+    HashMap<String, Object> batch = new HashMap<String, Object>();
     TestExecutor te = new TestExecutor(tc);
     batch.put(TestBatch.JSON_DTIME, startTime);
     batch.put(TestBatch.JSON_RUNMANUALLY, "0");
@@ -154,13 +154,13 @@ public class ContinuousTestRunner  extends SKTestRunner  implements Runnable {
     ConditionGroupResult tr = new ConditionGroupResult();
     for (TestDescription td : mConfig.continuous_tests) {
       te.executeTest(td, tr);
-
-      List<JSONObject> theResult = com.samknows.measurement.storage.StorageTestResult.testOutput(te.getExecutingTest(), td.type);
+    }
+    for (String out : tr.results) {
+      List<JSONObject> theResult = com.samknows.measurement.storage.StorageTestResult.testOutput(out, te);
       if (theResult != null) {
         testsResults.addAll(theResult);
       }
     }
-
     collectData();
     for (DCSData d : mListDCSData) {
       passiveMetrics.addAll(d.getPassiveMetric());
@@ -175,24 +175,24 @@ public class ContinuousTestRunner  extends SKTestRunner  implements Runnable {
 
 
   private void startCollectors() {
-    mCollectors = new ArrayList<>();
+    mCollectors = new ArrayList<BaseDataCollector>();
     mCollectors.add(new NetworkDataCollector(mContext));
     mCollectors.add(new CellTowersDataCollector(mContext));
 
-    for (BaseDataCollector c : mConfig.dataCollectors) {
+    for (com.samknows.measurement.schedule.datacollection.BaseDataCollector c : mConfig.dataCollectors) {
       if (c instanceof LocationDataCollector) {
         mLocationDataCollector = (LocationDataCollector) c;
       }
     }
 
-    for (EnvBaseDataCollector c : mCollectors) {
+    for (BaseDataCollector c : mCollectors) {
       c.start();
     }
     mLocationDataCollector.start(mTestContext);
   }
 
   private void stopCollectors() {
-    for (EnvBaseDataCollector c : mCollectors) {
+    for (BaseDataCollector c : mCollectors) {
       c.stop();
     }
     if (mLocationDataCollector != null) {
@@ -203,7 +203,7 @@ public class ContinuousTestRunner  extends SKTestRunner  implements Runnable {
   private void collectData() {
 
     mListDCSData.add(new PhoneIdentityDataCollector(mContext).collect());
-    for (EnvBaseDataCollector c : mCollectors) {
+    for (BaseDataCollector c : mCollectors) {
       mListDCSData.addAll(c.collectPartialData());
     }
     mListDCSData.addAll(mLocationDataCollector.getPartialData());

@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -41,39 +40,33 @@ public class SKAppSettings {
 	{
 		ctx = c;
 
+		int propertiesId = c.getResources().getIdentifier("properties", "raw", c.getPackageName());
+
+		InputStream is = c.getResources().openRawResource(propertiesId);
+		Properties p = new Properties();
 		try {
-			int propertiesId = c.getResources().getIdentifier("properties", "raw", c.getPackageName());
+			p.load(is);
+			reportingServerPath = p.getProperty(SKConstants.PROP_REPORTING_PATH);
+			rescheduleTime = Long.valueOf(p.getProperty(SKConstants.PROP_RESCHEDULE_TIME));
+			testStartWindow = Long.valueOf(p.getProperty(SKConstants.PROP_TEST_START_WINDOW_RTC));
+			rescheduleServiceTime = Long.valueOf(p.getProperty(SKConstants.PROP_KILLED_SERVICE_RESTART_TIME_IN_MILLIS));
+			brand = p.getProperty(SKConstants.PROP_BRAND);
+			multipleTabsEnabled = Boolean.valueOf(p.getProperty(SKConstants.ENABLE_MULTIPLE_TABS, "true"));
+			PackageInfo pInfo 		= c.getPackageManager().getPackageInfo(c.getPackageName(),0);
+			app_version_code 		= pInfo.versionCode;
+			app_version_name 		= pInfo.versionName;
 
-			InputStream is = c.getResources().openRawResource(propertiesId);
-			Properties p = new Properties();
-			try {
-				p.load(is);
-				reportingServerPath = p.getProperty(SKConstants.PROP_REPORTING_PATH);
-				rescheduleTime = Long.valueOf(p.getProperty(SKConstants.PROP_RESCHEDULE_TIME));
-				testStartWindow = Long.valueOf(p.getProperty(SKConstants.PROP_TEST_START_WINDOW_RTC));
-				rescheduleServiceTime = Long.valueOf(p.getProperty(SKConstants.PROP_KILLED_SERVICE_RESTART_TIME_IN_MILLIS));
-				brand = p.getProperty(SKConstants.PROP_BRAND);
-				multipleTabsEnabled = Boolean.valueOf(p.getProperty(SKConstants.ENABLE_MULTIPLE_TABS, "true"));
-				PackageInfo pInfo = c.getPackageManager().getPackageInfo(c.getPackageName(), 0);
-				app_version_code = pInfo.versionCode;
-				app_version_name = pInfo.versionName;
-
-			} catch (IOException e) {
-				SKLogger.e(TAG, "failed to load properties!");
-			} catch (NameNotFoundException nnfe) {
-				SKLogger.e(TAG, "failed to read manifest file: " + nnfe.getMessage());
-			} catch (NullPointerException npe) {
-				// This should be seen only when running a mock test.
-				Log.e(this.getClass().getName(), "NullPointerException - make sure this happens only when running a mock test!");
-				SKLogger.e(TAG, npe.getMessage());
-				app_version_code = 0;
-			} finally {
-				IOUtils.closeQuietly(is);
-			}
-		} catch (Resources.NotFoundException e) {
-			// Deal with apps that *don't* have a raw properties file!
-      SKLogger.e(TAG, "failed to find raw/properties in the project!");
-
+		} catch (IOException e) {
+			SKLogger.e(TAG, "failed to load properies!");
+		} catch (NameNotFoundException nnfe) {
+			SKLogger.e(TAG, "failed to read manifest file: "+ nnfe.getMessage());
+		} catch(NullPointerException npe){
+			// This should be seen only when running a mock test.
+			Log.e(this.getClass().getName(), "NullPointerException - make sure this happens only when running a mock test!");
+			SKLogger.e(TAG, npe.getMessage());
+			app_version_code = 0;
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
 	}
 
@@ -109,6 +102,10 @@ public class SKAppSettings {
 		return ctx.getSharedPreferences(SKConstants.PREF_FILE_NAME, Context.MODE_PRIVATE).getString(key, null);
 	}
 
+	public String getString(String key, String default_value) {
+		return ctx.getSharedPreferences(SKConstants.PREF_FILE_NAME, Context.MODE_PRIVATE).getString(key, default_value);
+	}
+
 	public String getResourceString(int id) {
 		return ctx.getString(id);
 	}
@@ -135,6 +132,10 @@ public class SKAppSettings {
 
 	public String getUnitId() {
 		return getString(SKConstants.PREF_KEY_UNIT_ID);
+	}
+
+	public void saveUnitId(String unitId) {
+		saveString(SKConstants.PREF_KEY_UNIT_ID, unitId);
 	}
 
 //	public String getServerBaseUrl() {
@@ -167,6 +168,10 @@ public class SKAppSettings {
 		return getLong(SKConstants.PREF_KEY_USED_BYTES, 0);
 	}
 
+	public void saveDataCap(long cap) {
+		PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(SKConstants.PREF_DATA_CAP, cap+"").commit();
+	}
+
 	/**
 	 * data cap in bytes
 	 * if preference has been defined use it
@@ -186,6 +191,12 @@ public class SKAppSettings {
 			bytes = Long.MAX_VALUE;
 		}
 		return bytes;
+	}
+
+	public void setDataCapMbIfNull(long cap) {
+		if (getDataCapBytes() == Long.MAX_VALUE || getDataCapBytes() <= 0) {
+			saveDataCap(cap);
+		}
 	}
 
 	public boolean isDataCapReached() {
@@ -213,6 +224,8 @@ public class SKAppSettings {
 		}
 	}
 
+
+
 	public void saveNextRunTime(long time) {
 		Editor editor = ctx.getSharedPreferences(SKConstants.PREF_FILE_NAME, Context.MODE_PRIVATE).edit();
 		editor.putLong(SKConstants.PREF_NEXT_RUN_TIME,  time);
@@ -224,8 +237,40 @@ public class SKAppSettings {
     return value;
 	}
 
+	public String getConfigVersion() {
+		return getString(SKConstants.PREF_KEY_CONFIG_VERSION);
+	}
+
+	public void saveConfigVersion(String v) {
+		saveString(SKConstants.PREF_KEY_CONFIG_VERSION, v);
+	}
+
 	public String getConfigPath() {
 		return getString(SKConstants.PREF_KEY_CONFIG_PATH);
+	}
+
+	public void setForceDownload() {
+		//force_download = true;
+	}
+
+	public boolean getForceDownload() {
+//		boolean ret = force_download;
+//		force_download = false;
+//		return ret;
+	  return false;
+	}
+
+
+	public void saveConfigPath(String path) {
+		saveString(SKConstants.PREF_KEY_CONFIG_PATH, path);
+	}
+
+	public boolean wasIntroShown() {
+		return getBoolean(SKConstants.PREF_WAS_INTRO_SHOWN, false);
+	}
+
+	public void saveIntroShown(boolean wasShown) {
+		saveBoolean(SKConstants.PREF_FILE_NAME, wasShown);
 	}
 
 	public String getUsername() {
@@ -240,4 +285,23 @@ public class SKAppSettings {
 		String devices = getString(SKConstants.PREF_KEY_DEVICES); 
 		return DeviceDescription.parce(devices);
 	}
+
+	public void saveUsername(String username) {
+		saveString(SKConstants.PREF_KEY_USERNAME, username);
+	}
+
+	public void savePassword(String password) {
+		saveString(SKConstants.PREF_KEY_PASSWORD, password);
+	}
+
+	public void saveDevices(String device) {
+		saveString(SKConstants.PREF_KEY_DEVICES, device);
+	}
+
+	public void clearAll() {
+		Editor editor = ctx.getSharedPreferences(SKConstants.PREF_FILE_NAME, Context.MODE_PRIVATE).edit();
+		editor.clear();
+		editor.commit();
+	}
+
 }

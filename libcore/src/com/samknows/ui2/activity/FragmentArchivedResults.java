@@ -8,6 +8,8 @@ import org.json.JSONObject;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.ActionBar;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -76,8 +78,7 @@ public class FragmentArchivedResults extends Fragment {
   private LinearLayout ll_passive_metrics, ll_passive_metrics_divider_1, ll_passive_metrics_divider_2, ll_passive_metrics_divider_location;
   private ListView lv_archived_results;
   private View listViewRow, clickedView;
-  private TextView pm_tv_header_label_sim_and_network_operators, pm_tv_header_label_signal, pm_tv_header_label_device, pm_tv_header_label_location;
-  private TextView
+  private TextView tv_hader_label_sim_and_network_operators, tv_header_label_signal, tv_header_label_device, tv_header_label_location,
       tv_label_sim_operator, tv_label_sim_operator_code, tv_label_network_operator, tv_label_network_operator_code, tv_label_roaming_status,
       tv_label_cell_tower_ID, tv_label_cell_tower_area_location_code, tv_label_signal_strength, tv_label_bearer,
       tv_label_manufacturer, tv_label_model, tv_label_OS, tv_label_OS_version, tv_label_phone_type, tv_label_latitude, tv_label_longitude,
@@ -87,28 +88,16 @@ public class FragmentArchivedResults extends Fragment {
       tv_result_manufacturer, tv_result_model, tv_result_OS, tv_result_OS_version, tv_result_phone_type, tv_result_latitude, tv_result_longitude,
       tv_result_accuracy, tv_result_provider,
       tv_warning_no_results_yet;
-
-  private View tv_group_wifi_ssid;
-  private View tv_group_municipality;
-  private View tv_group_country_name;
-  private View tv_group_wlan_carrier;
-  private TextView tv_result_wifi_ssid;
-  private TextView tv_result_municipality;
-  private TextView tv_result_country_name;
-  private TextView tv_result_wlan_carrier;
-
   private Typeface typeface_Roboto_Light, typeface_Roboto_Thin;
   private MenuItem menu_Item_Network_Type_Filter, menu_Item_Refresh_Spinner, menu_Item_Share_Result;
   private TextView publicIp;
   private TextView submissionId;
-  private TextView networkType;
-  private TextView target;
 
   // Complex variables
   // Hosts the archived results
-  private ArrayList<TestResult> aList_ArchivedResults = new ArrayList<>();
+  private ArrayList<TestResult> aList_ArchivedResults = new ArrayList<TestResult>();
   // Temporary list to avoid modified the actual list in background thread which causes IllegalStateException
-  private ArrayList<TestResult> aList_TemporaryArchivedTests = new ArrayList<>();
+  private ArrayList<TestResult> aList_TemporaryArchivedTests = new ArrayList<TestResult>();
   private ArrayAdapter<TestResult> adapter_Archived_Results;
 
   private View mArchiveFilterButton = null;
@@ -143,64 +132,53 @@ public class FragmentArchivedResults extends Fragment {
     View view = getView();
     SKTypeface.sChangeChildrenToDefaultFontTypeface(view);
 
-//    // Set fonts
-//    // Header labels fonts
-//    tv_warning_no_results_yet.setTypeface(typeface_Roboto_Light);
-//    pm_tv_header_label_sim_and_network_operators.setTypeface(typeface_Roboto_Thin);
-//    pm_tv_header_label_signal.setTypeface(typeface_Roboto_Thin);
-//    pm_tv_header_label_device.setTypeface(typeface_Roboto_Thin);
-//    pm_tv_header_label_location.setTypeface(typeface_Roboto_Thin);
-//    // Labels fonts
-//    tv_label_sim_operator.setTypeface(typeface_Roboto_Light);
-//    tv_label_sim_operator_code.setTypeface(typeface_Roboto_Light);
-//    tv_label_network_operator.setTypeface(typeface_Roboto_Light);
-//    tv_label_network_operator_code.setTypeface(typeface_Roboto_Light);
-//    tv_label_roaming_status.setTypeface(typeface_Roboto_Light);
-//    tv_label_cell_tower_ID.setTypeface(typeface_Roboto_Light);
-//    tv_label_cell_tower_area_location_code.setTypeface(typeface_Roboto_Light);
-//    tv_label_signal_strength.setTypeface(typeface_Roboto_Light);
-//    tv_label_bearer.setTypeface(typeface_Roboto_Light);
-//    tv_label_manufacturer.setTypeface(typeface_Roboto_Light);
-//    tv_label_model.setTypeface(typeface_Roboto_Light);
-//    tv_label_OS.setTypeface(typeface_Roboto_Light);
-//    tv_label_OS_version.setTypeface(typeface_Roboto_Light);
-//    tv_label_phone_type.setTypeface(typeface_Roboto_Light);
-//    tv_label_latitude.setTypeface(typeface_Roboto_Light);
-//    tv_label_longitude.setTypeface(typeface_Roboto_Light);
-//    tv_label_accuracy.setTypeface(typeface_Roboto_Light);
-//    tv_label_provider.setTypeface(typeface_Roboto_Light);
-//    // Results fonts
-//    tv_result_sim_operator.setTypeface(typeface_Roboto_Light);
-//    tv_result_sim_operator_code.setTypeface(typeface_Roboto_Light);
-//    tv_result_network_operator.setTypeface(typeface_Roboto_Light);
-//    tv_result_network_operator_code.setTypeface(typeface_Roboto_Light);
-//    tv_result_roaming_status.setTypeface(typeface_Roboto_Light);
-//    tv_result_cell_tower_ID.setTypeface(typeface_Roboto_Light);
-//    tv_result_cell_tower_area_location_code.setTypeface(typeface_Roboto_Light);
-//    tv_result_signal_strength.setTypeface(typeface_Roboto_Light);
-//    tv_result_bearer.setTypeface(typeface_Roboto_Light);
-//    tv_result_manufacturer.setTypeface(typeface_Roboto_Light);
-//    tv_result_model.setTypeface(typeface_Roboto_Light);
-//    tv_result_OS.setTypeface(typeface_Roboto_Light);
-//    tv_result_OS_version.setTypeface(typeface_Roboto_Light);
-//    tv_result_phone_type.setTypeface(typeface_Roboto_Light);
-//    tv_result_latitude.setTypeface(typeface_Roboto_Light);
-//    tv_result_longitude.setTypeface(typeface_Roboto_Light);
-//    tv_result_accuracy.setTypeface(typeface_Roboto_Light);
-//    tv_result_provider.setTypeface(typeface_Roboto_Light);
-//
-//    if (tv_result_wifi_ssid != null) {
-//      tv_result_wifi_ssid.setTypeface(typeface_Roboto_Light);
-//    }
-//    if (tv_result_municipality != null) {
-//      tv_result_municipality.setTypeface(typeface_Roboto_Light);
-//    }
-//    if (tv_result_country_name != null) {
-//      tv_result_country_name.setTypeface(typeface_Roboto_Light);
-//    }
-//    if (tv_result_wlan_carrier != null) {
-//      tv_result_wlan_carrier.setTypeface(typeface_Roboto_Light);
-//    }
+    // Set fonts
+    // Header labels fonts
+    tv_warning_no_results_yet.setTypeface(typeface_Roboto_Light);
+    tv_hader_label_sim_and_network_operators.setTypeface(typeface_Roboto_Thin);
+    tv_header_label_signal.setTypeface(typeface_Roboto_Thin);
+    tv_header_label_device.setTypeface(typeface_Roboto_Thin);
+    tv_header_label_location.setTypeface(typeface_Roboto_Thin);
+    // Labels fonts
+    tv_label_sim_operator.setTypeface(typeface_Roboto_Light);
+    tv_label_sim_operator_code.setTypeface(typeface_Roboto_Light);
+    tv_label_network_operator.setTypeface(typeface_Roboto_Light);
+    tv_label_network_operator_code.setTypeface(typeface_Roboto_Light);
+    tv_label_roaming_status.setTypeface(typeface_Roboto_Light);
+    tv_label_cell_tower_ID.setTypeface(typeface_Roboto_Light);
+    tv_label_cell_tower_area_location_code.setTypeface(typeface_Roboto_Light);
+    tv_label_signal_strength.setTypeface(typeface_Roboto_Light);
+    tv_label_bearer.setTypeface(typeface_Roboto_Light);
+    tv_label_manufacturer.setTypeface(typeface_Roboto_Light);
+    tv_label_model.setTypeface(typeface_Roboto_Light);
+    tv_label_OS.setTypeface(typeface_Roboto_Light);
+    tv_label_OS_version.setTypeface(typeface_Roboto_Light);
+    tv_label_phone_type.setTypeface(typeface_Roboto_Light);
+    tv_label_latitude.setTypeface(typeface_Roboto_Light);
+    tv_label_longitude.setTypeface(typeface_Roboto_Light);
+    tv_label_accuracy.setTypeface(typeface_Roboto_Light);
+    tv_label_provider.setTypeface(typeface_Roboto_Light);
+    // Results fonts
+    tv_result_sim_operator.setTypeface(typeface_Roboto_Light);
+    tv_result_sim_operator_code.setTypeface(typeface_Roboto_Light);
+    tv_result_network_operator.setTypeface(typeface_Roboto_Light);
+    tv_result_network_operator_code.setTypeface(typeface_Roboto_Light);
+    tv_result_roaming_status.setTypeface(typeface_Roboto_Light);
+    tv_result_cell_tower_ID.setTypeface(typeface_Roboto_Light);
+    tv_result_cell_tower_area_location_code.setTypeface(typeface_Roboto_Light);
+    tv_result_signal_strength.setTypeface(typeface_Roboto_Light);
+    tv_result_bearer.setTypeface(typeface_Roboto_Light);
+    tv_result_manufacturer.setTypeface(typeface_Roboto_Light);
+    tv_result_model.setTypeface(typeface_Roboto_Light);
+    tv_result_OS.setTypeface(typeface_Roboto_Light);
+    tv_result_OS_version.setTypeface(typeface_Roboto_Light);
+    tv_result_phone_type.setTypeface(typeface_Roboto_Light);
+    tv_result_latitude.setTypeface(typeface_Roboto_Light);
+    tv_result_longitude.setTypeface(typeface_Roboto_Light);
+    tv_result_accuracy.setTypeface(typeface_Roboto_Light);
+    tv_result_provider.setTypeface(typeface_Roboto_Light);
+
+
   }
 
   // Receive the result from a previous call to startActivityForResult(Intent, int)
@@ -308,6 +286,7 @@ public class FragmentArchivedResults extends Fragment {
             rl_main.removeView(listViewRow);      // Remove the view from the layout
           }
 
+          ;
         });
 
         // Hide the passive metrics layout
@@ -320,6 +299,8 @@ public class FragmentArchivedResults extends Fragment {
           public void onAnimationStart(Animator animation) {
             clickedView.setAlpha(1.0f);          // Make the view on the list view visible
           }
+
+          ;
 
           // Executed at the end of the animation
           @Override
@@ -367,7 +348,7 @@ public class FragmentArchivedResults extends Fragment {
     protected Void doInBackground(Void... params) {
       // Clear the values of the temporary list - by completely re-constructing it,
       // to avoid any danger of array adapters sharing list references.
-      aList_TemporaryArchivedTests = new ArrayList<>();
+      aList_TemporaryArchivedTests = new ArrayList<TestResult>();
       //aList_TemporaryArchivedTests.clear();
       // Fill the temporary list
       populateEmptyArchivedTestsList(mSelectedNetworkType, aList_TemporaryArchivedTests);
@@ -433,7 +414,7 @@ public class FragmentArchivedResults extends Fragment {
             // Make sure your adapter calls notifyDataSetChanged() when its content changes.
             // [in ListView(2131165312, class android.widget.ListView) with
             // Adapter(class com.samknows.ui2.activity.AdapterArchivedResultsListView)]
-            aList_ArchivedResults = new ArrayList<>(aList_TemporaryArchivedTests);
+            aList_ArchivedResults = new ArrayList<TestResult>(aList_TemporaryArchivedTests);
             // Refresh the list view
             adapter_Archived_Results = new AdapterArchivedResultsListView(getActivity(), aList_ArchivedResults);
             lv_archived_results.setAdapter(adapter_Archived_Results);
@@ -455,7 +436,7 @@ public class FragmentArchivedResults extends Fragment {
     rl_main = (RelativeLayout) pView.findViewById(R.id.fragment_archived_results_rl_main);
 
     // View hosting the passive metrics layout
-    ll_passive_metrics = (LinearLayout) pView.findViewById(R.id.fragment_passive_metrics_ll);
+    ll_passive_metrics = (LinearLayout) pView.findViewById(R.id.fragment_archived_results_ll_passive_metrics);
     ll_passive_metrics.setVisibility(View.GONE);    // Make it invisible in the beginning
 
     // Set the warning message
@@ -463,89 +444,70 @@ public class FragmentArchivedResults extends Fragment {
 
     // Passive metrics fields
     // Header labels
-    pm_tv_header_label_sim_and_network_operators = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_sim_and_network_operators);
-    pm_tv_header_label_signal = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_signal);
-    pm_tv_header_label_device = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_device);
-    pm_tv_header_label_location = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_location);
+    tv_hader_label_sim_and_network_operators = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_sim_and_network_operators);
+    tv_header_label_signal = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_signal);
+    tv_header_label_device = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_device);
+    tv_header_label_location = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_location);
     // Dividers
-    ll_passive_metrics_divider_1 = (LinearLayout) pView.findViewById(R.id.fragment_passive_metrics_divider_sim_and_network_operators);
-    ll_passive_metrics_divider_2 = (LinearLayout) pView.findViewById(R.id.fragment_passive_metrics_divider_signal);
-    ll_passive_metrics_divider_location = (LinearLayout) pView.findViewById(R.id.fragment_passive_metrics_divider_location);
+    ll_passive_metrics_divider_1 = (LinearLayout) pView.findViewById(R.id.fragment_archived_results_passive_metric_divider_sim_and_network_operators);
+    ll_passive_metrics_divider_2 = (LinearLayout) pView.findViewById(R.id.fragment_archived_results_passive_metric_divider_signal);
+    ll_passive_metrics_divider_location = (LinearLayout) pView.findViewById(R.id.fragment_archived_results_passive_metric_divider_location);
     // Labels
-    tv_label_sim_operator = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_sim_operator);
-    tv_label_sim_operator_code = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_sim_operator_code);
-    tv_label_network_operator = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_network_operator);
-    tv_label_network_operator_code = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_network_operator_code);
-    tv_label_roaming_status = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_roaming_status);
-    tv_label_cell_tower_ID = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_cell_tower_ID);
-    tv_label_cell_tower_area_location_code = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_cell_tower_area_location_code);
-    tv_label_signal_strength = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_signal_strength);
-    tv_label_bearer = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_bearer);
-    tv_label_manufacturer = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_manufacturer);
-    tv_label_model = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_model);
-    tv_label_OS = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_OS);
-    tv_label_OS_version = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_OS_version);
-    tv_label_phone_type = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_phone_type);
-    tv_label_latitude = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_latitude);
-    tv_label_longitude = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_longitude);
-    tv_label_accuracy = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_accuracy);
-    tv_label_provider = (TextView) pView.findViewById(R.id.fragment_passive_metrics_label_location_provider);
+    tv_label_sim_operator = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_sim_operator);
+    tv_label_sim_operator_code = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_sim_operator_code);
+    tv_label_network_operator = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_network_operator);
+    tv_label_network_operator_code = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_network_operator_code);
+    tv_label_roaming_status = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_roaming_status);
+    tv_label_cell_tower_ID = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_cell_tower_ID);
+    tv_label_cell_tower_area_location_code = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_cell_tower_area_location_code);
+    tv_label_signal_strength = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_signal_strength);
+    tv_label_bearer = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_bearer);
+    tv_label_manufacturer = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_manufacturer);
+    tv_label_model = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_model);
+    tv_label_OS = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_OS);
+    tv_label_OS_version = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_OS_vesion);
+    tv_label_phone_type = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_phone_type);
+    tv_label_latitude = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_latitude);
+    tv_label_longitude = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_longitude);
+    tv_label_accuracy = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_accuracy);
+    tv_label_provider = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_label_location_provider);
     // Results
-    tv_result_sim_operator = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_sim_operator_name);
-    tv_result_sim_operator_code = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_sim_operator_code);
-    tv_result_network_operator = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_network_operator_name);
-    tv_result_network_operator_code = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_network_operator_code);
-    tv_result_roaming_status = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_roaming_status);
-    tv_result_cell_tower_ID = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_cell_tower_id);
-    tv_result_cell_tower_area_location_code = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_cell_tower_area_location_code);
-    tv_result_signal_strength = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_signal_strength);
-    tv_result_bearer = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_bearer);
-    tv_result_manufacturer = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_manufacturer);
-    tv_result_model = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_detail_model);
-    tv_result_OS = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_detail_OS);
-    tv_result_OS_version = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_OS_version);
-    tv_result_phone_type = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_phone_type);
-    tv_result_latitude = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_latitude);
-    tv_result_longitude = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_longitude);
-    tv_result_accuracy = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_accuracy);
-    tv_result_provider = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_location_provider);
+    tv_result_sim_operator = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_sim_operator_name);
+    tv_result_sim_operator_code = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_sim_operator_code);
+    tv_result_network_operator = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_network_operator_name);
+    tv_result_network_operator_code = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_network_operator_code);
+    tv_result_roaming_status = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_roaming_status);
+    tv_result_cell_tower_ID = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_cell_tower_id);
+    tv_result_cell_tower_area_location_code = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_cell_tower_area_location_code);
+    tv_result_signal_strength = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_signal_strength);
+    tv_result_bearer = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_bearer);
+    tv_result_manufacturer = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_manufacturer);
+    tv_result_model = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_detail_model);
+    tv_result_OS = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_detail_OS);
+    tv_result_OS_version = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_OS_version);
+    tv_result_phone_type = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_phone_type);
+    tv_result_latitude = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_latitude);
+    tv_result_longitude = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_longitude);
+    tv_result_accuracy = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_accuracy);
+    tv_result_provider = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_location_provider);
 
-    // WIFI SSID, and new stuff!
-    try {
-      tv_group_wifi_ssid = pView.findViewById(R.id.fragment_passive_metrics_group_wifi_ssid);
-      tv_group_municipality =  pView.findViewById(R.id.fragment_passive_metrics_group_municipality);
-      tv_group_country_name =  pView.findViewById(R.id.fragment_passive_metrics_group_country_name);
-      tv_group_wlan_carrier =  pView.findViewById(R.id.fragment_passive_metrics_group_wlan_carrier);
-      tv_result_wifi_ssid = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_wifi_ssid);
-      tv_result_municipality = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_municipality);
-      tv_result_country_name = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_country_name);
-      tv_result_wlan_carrier = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_wlan_carrier);
-    } catch (java.lang.NoSuchFieldError e) {
-      // This happens with some versions of passive_metrics.panel, where these values are not availabe!
-      //SKLogger.sAssert(false);
-    }
-
-    publicIp = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_your_ip_value);
-    submissionId = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_reference_number_value);
-    networkType = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_network_type);
-    target = (TextView) pView.findViewById(R.id.fragment_passive_metrics_result_target);
+    publicIp = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_your_ip_value);
+    submissionId = (TextView) pView.findViewById(R.id.fragment_archived_results_passive_metric_result_reference_number_value);
     publicIp.setText("");
     submissionId.setText("");
-    networkType.setText("");
-    target.setText("");
 
     // Initialise fonts
     typeface_Roboto_Light = SKTypeface.sGetTypefaceWithPathInAssets( "fonts/roboto_light.ttf");
 
     // Now - what items to show?
     LinearLayout ip_and_reference_metrics = (LinearLayout) pView.findViewById(R.id.ip_and_reference_metrics);
-    LinearLayout fragment_passive_metrics_ll_divider_sim_and_network_operators = (LinearLayout) pView.findViewById(R.id.fragment_passive_metrics_divider_sim_and_network_operators);
+    LinearLayout network_operator_metrics = (LinearLayout) pView.findViewById(R.id.network_operator_metrics);
     LinearLayout signal_metrics = (LinearLayout) pView.findViewById(R.id.signal_metrics);
     LinearLayout device_metrics = (LinearLayout) pView.findViewById(R.id.device_metrics);
     LinearLayout location_metrics = (LinearLayout) pView.findViewById(R.id.location_metrics);
 
     if (SKApplication.getAppInstance().getPassiveMetricsJustDisplayPublicIpAndSubmissionId() == true) {
-      fragment_passive_metrics_ll_divider_sim_and_network_operators.setVisibility(View.GONE);
+      network_operator_metrics.setVisibility(View.GONE);
       signal_metrics.setVisibility(View.GONE);
       device_metrics.setVisibility(View.GONE);
       location_metrics.setVisibility(View.GONE);
@@ -585,7 +547,7 @@ public class FragmentArchivedResults extends Fragment {
     lv_archived_results.setAdapter(adapter_Archived_Results);                        // Assign the adapter to the list view
 
     // Set the listener to show the passive metrics/details about an specific archived test
-    if (SKApplication.getAppInstance().getRevealPassiveMetricsOnArchiveResultsPanel()) {
+    if (SKApplication.getAppInstance().getRevealPassiveMetricsFromPanel()) {
       lv_archived_results.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -738,15 +700,7 @@ public class FragmentArchivedResults extends Fragment {
     eNetworkTypeResults previousState = SKApplication.getNetworkTypeResults();
 
     SKApplication.setNetworkTypeResults(networkType);
-
-    try {
-      populateEmptyArrayList(pTemporaryArchivedTestsList);
-    } catch ( java.lang.IllegalStateException e) {
-      // This should *never* happen, due to the use of isAdded() in populateEmptyArrayList...!
-      // But, this is belt-and-braces.
-      // http://stackoverflow.com/questions/22366596/android-illegalstateexception-fragment-not-attached-to-activity-webview
-      SKLogger.sAssert(false);
-    }
+    populateEmptyArrayList(pTemporaryArchivedTestsList);
 
     // Back to the previous state
     SKApplication.setNetworkTypeResults(previousState);
@@ -793,8 +747,6 @@ public class FragmentArchivedResults extends Fragment {
           String testnumber = activeMetricsEntry.getString("test");
           String success = activeMetricsEntry.getString("success");
           String hrresult = activeMetricsEntry.getString("hrresult");
-          String targetServerLocation = activeMetricsEntry.getString("location");
-          testResult.setTargetServerLocation(targetServerLocation);
 
           if (success.equals("0")) {
             hrresult = getString(R.string.failed);
@@ -846,7 +798,7 @@ public class FragmentArchivedResults extends Fragment {
         // This jumps over them to avoid showing them.
         if (testResult.getDownloadResult().equals("0") && testResult.getUploadResult().equals("0") && testResult.getLatencyResult().equals("0")) {
           // Try to track this in the debugger, if it happens - to help figure-out the underlying reason.
-          //SKLogger.sAssert(getClass(), false);
+          SKLogger.sAssert(getClass(), false);
           continue;
         }
 
@@ -885,10 +837,6 @@ public class FragmentArchivedResults extends Fragment {
             testResult.setOSType(value);
           } else if (metric.equals("osversion")) {
             testResult.setOSVersion(value);
-          } else if (metric.equals("osversionandroid")) {
-            tv_result_OS_version.setText(value);
-          } else if (metric.equals("androidbuildversion")) {
-            testResult.setOSVersion(value);
           } else if (metric.equals("phonetype")) {
             testResult.setPhoneType(value);
           } else if (metric.equals("latitude")) {
@@ -911,20 +859,6 @@ public class FragmentArchivedResults extends Fragment {
             } else {
               SKLogger.sAssert(getClass(), false);
             }
-
-          // WIFI_SSID and other new stuff!
-          // wifi_ssid
-          // municipality
-          // country_name
-          // android os version string
-          } else if (metric.equals("wifi_ssid")){
-            testResult.setWifiSSID(value);
-          } else if (metric.equals("municipality")){
-            testResult.setMunicipality(value);
-          } else if (metric.equals("country_name")){
-            testResult.setCountryName(value);
-          } else if (metric.equals("wlan_carrier")){
-            testResult.setWLANCarrier(value);
           }
 
           {
@@ -972,14 +906,12 @@ public class FragmentArchivedResults extends Fragment {
    * @param pTestResult
    */
   private void fillPassiveMetrics(TestResult pTestResult) {
-
     // If network type is WiFi, hide passive metrics not related with WiFi. If network type is not WiFi, show all passive metrics related with mobile network
-    // int visibilityOfMobilePassiveMetrics = pTestResult.getNetworkType() == eNetworkTypeResults.eNetworkTypeResults_WiFi ? View.GONE : View.VISIBLE;
+    int visibilityOfMobilePassiveMetrics = pTestResult.getNetworkType() == eNetworkTypeResults.eNetworkTypeResults_WiFi ? View.GONE : View.VISIBLE;
 
-    /*
     // Fields which visibility depends on the kind of network
-    pm_tv_header_label_sim_and_network_operators.setVisibility(visibilityOfMobilePassiveMetrics);
-    pm_tv_header_label_signal.setVisibility(visibilityOfMobilePassiveMetrics);
+    tv_hader_label_sim_and_network_operators.setVisibility(visibilityOfMobilePassiveMetrics);
+    tv_header_label_signal.setVisibility(visibilityOfMobilePassiveMetrics);
 
     ll_passive_metrics_divider_1.setVisibility(visibilityOfMobilePassiveMetrics);
     ll_passive_metrics_divider_2.setVisibility(visibilityOfMobilePassiveMetrics);
@@ -1003,11 +935,9 @@ public class FragmentArchivedResults extends Fragment {
     tv_result_cell_tower_area_location_code.setVisibility(visibilityOfMobilePassiveMetrics);
     tv_result_signal_strength.setVisibility(visibilityOfMobilePassiveMetrics);
     tv_result_bearer.setVisibility(visibilityOfMobilePassiveMetrics);
-    */
 
     // Passive metrics that will be displayed just in mobile network type
-    //if (visibilityOfMobilePassiveMetrics == View.VISIBLE)
-    {
+    if (visibilityOfMobilePassiveMetrics == View.VISIBLE) {
       tv_result_sim_operator.setText(pTestResult.getSimOperatorName());
       tv_result_sim_operator_code.setText(pTestResult.getSimOperatorCode());
       tv_result_network_operator.setText(pTestResult.getNetworkOperatorName());
@@ -1044,7 +974,7 @@ public class FragmentArchivedResults extends Fragment {
     int visibilityOfLocation = pTestResult.getLatitude() == null ? View.GONE : View.VISIBLE;
 
     // Set the visibility of the location data section
-    pm_tv_header_label_location.setVisibility(visibilityOfLocation);
+    tv_header_label_location.setVisibility(visibilityOfLocation);
     ll_passive_metrics_divider_location.setVisibility(visibilityOfLocation);
     tv_label_latitude.setVisibility(visibilityOfLocation);
     tv_label_longitude.setVisibility(visibilityOfLocation);
@@ -1068,47 +998,6 @@ public class FragmentArchivedResults extends Fragment {
     }
     if (submissionId != null) {
       submissionId.setText(pTestResult.getSubmissionId());
-    }
-    if (networkType != null) {
-      networkType.setText(pTestResult.getNetworkTypeAsString());
-    }
-    if (target != null) {
-      target.setText(pTestResult.getTargetServerLocation());
-    }
-
-    // Show/hide this ONLY if Network Type is WIFI, *and* if value is NOT empty!
-    if (tv_result_wifi_ssid != null) {
-      tv_result_wifi_ssid.setText(pTestResult.getWifiSSID());
-    }
-    if (tv_group_wifi_ssid  != null) {
-      int visibility = (pTestResult.getNetworkType() == eNetworkTypeResults.eNetworkTypeResults_WiFi) ? View.VISIBLE : View.GONE;
-      if (pTestResult.getWifiSSID().length() == 0)  {
-        visibility = View.GONE;
-      }
-      tv_group_wifi_ssid.setVisibility(visibility);
-    }
-
-    if (tv_result_wifi_ssid != null) {
-      tv_group_wifi_ssid.setVisibility((pTestResult.getWifiSSID().length() > 0) ? View.VISIBLE : View.GONE);
-    }
-
-    // Show/hide this ONLY if value is NOT empty!
-    if (tv_result_municipality != null) {
-      tv_result_municipality.setText(pTestResult.getMunicipality());
-      tv_group_municipality.setVisibility((pTestResult.getMunicipality().length() > 0) ? View.VISIBLE : View.GONE);
-    }
-
-    // Show/hide this ONLY if value is NOT empty!
-    if (SKApplication.getAppInstance().getDoesAppDisplayCountryNameInMetrics()) {
-      if (tv_result_country_name != null) {
-        tv_result_country_name.setText(pTestResult.getCountryName());
-        tv_group_country_name.setVisibility((pTestResult.getCountryName().length() > 0) ? View.VISIBLE : View.GONE);
-      }
-    }
-    // Show/hide this ONLY if value is NOT empty!
-    if (tv_result_wlan_carrier != null) {
-      tv_result_wlan_carrier.setText(pTestResult.getWlanCarrier());
-      tv_group_wlan_carrier.setVisibility((pTestResult.getWlanCarrier().length() > 0) ? View.VISIBLE : View.GONE);
     }
   }
 
@@ -1166,6 +1055,7 @@ public class FragmentArchivedResults extends Fragment {
 
         default:
           SKLogger.sAssert(getClass(), false);
+          return;
       }
 
     }
@@ -1248,9 +1138,11 @@ public class FragmentArchivedResults extends Fragment {
             });
           }
 
+          ;
         });
       }
 
+      ;
     });
   }
 

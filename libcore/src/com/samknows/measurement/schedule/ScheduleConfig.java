@@ -19,7 +19,7 @@ import com.samknows.libcore.SKConstants;
 import com.samknows.measurement.schedule.TestDescription.*;
 import com.samknows.measurement.TestRunner.ManualTestRunner;
 import com.samknows.measurement.schedule.condition.ConditionGroup;
-import com.samknows.measurement.environment.BaseDataCollector;
+import com.samknows.measurement.schedule.datacollection.BaseDataCollector;
 import com.samknows.measurement.schedule.failaction.RetryFailAction;
 import com.samknows.measurement.util.OtherUtils;
 import com.samknows.measurement.util.XmlUtils;
@@ -73,15 +73,15 @@ public class ScheduleConfig implements Serializable {
   public LocationType locationType;  //location type for data collectors
   public RetryFailAction retryFailAction;
   private boolean backgroundTest = true;
-  public List<ConditionGroup> conditionGroups = new ArrayList<>();
-  public List<TestDescription> tests = new ArrayList<>();
-  public List<TestGroup> backgroundTestGroups = new ArrayList<>();
-  public List<TestDescription> manual_tests = new ArrayList<>();
-  public List<TestDescription> continuous_tests = new ArrayList<>();
+  public List<ConditionGroup> conditionGroups = new ArrayList<ConditionGroup>();
+  public List<TestDescription> tests = new ArrayList<TestDescription>();
+  public List<TestGroup> backgroundTestGroups = new ArrayList<TestGroup>();
+  public List<TestDescription> manual_tests = new ArrayList<TestDescription>();
+  public List<TestDescription> continuous_tests = new ArrayList<TestDescription>();
   public String manual_test_condition_group_id;
-  public List<BaseDataCollector> dataCollectors = new ArrayList<>();
-  public HashMap<String, String> hosts = new HashMap<>();
-  public HashMap<String, Communication> communications = new HashMap<>();
+  public List<BaseDataCollector> dataCollectors = new ArrayList<BaseDataCollector>();
+  public HashMap<String, String> hosts = new HashMap<String, String>();
+  public HashMap<String, Communication> communications = new HashMap<String, Communication>();
   public long maximumTestUsage = 0;
 
   public enum TestAlarmType {
@@ -155,7 +155,7 @@ public class ScheduleConfig implements Serializable {
    * Returns the test batch to be run in the RunTestActivity
    */
   public List<TestDescription> testGroup() {
-    List<TestDescription> ret = new ArrayList<>();
+    List<TestDescription> ret = new ArrayList<TestDescription>();
     //Closest Target
     TestDescription td = findTestForType(SKConstants.TEST_TYPE_CLOSEST_TARGET);
     if (td != null) {
@@ -229,7 +229,7 @@ public class ScheduleConfig implements Serializable {
     c.retryFailAction = RetryFailAction.parseXml((Element) node.getElementsByTagName(ONFAIL_TEST_ACTION).item(0));
 
     //conditions
-    c.conditionGroups = new ArrayList<>();
+    c.conditionGroups = new ArrayList<ConditionGroup>();
     NodeList conditionGroups = node.getElementsByTagName(CONDITION_GROUP);
     for (int i = 0; i < conditionGroups.getLength(); i++) {
       Element conditionGroupNode = (Element) conditionGroups.item(i);
@@ -240,7 +240,7 @@ public class ScheduleConfig implements Serializable {
     }
 
     //tests
-    c.tests = new ArrayList<>();
+    c.tests = new ArrayList<TestDescription>();
     NodeList tests = null;
     for (Node child = node.getFirstChild(); child != null; child = child.getNextSibling()) {
       if (child instanceof Element && child.getNodeName().equals(TESTS)) {
@@ -257,7 +257,7 @@ public class ScheduleConfig implements Serializable {
     }
 
     //tests groups
-    c.backgroundTestGroups = new ArrayList<>();
+    c.backgroundTestGroups = new ArrayList<TestGroup>();
     NodeList tests_groups = node.getElementsByTagName(SCHEDULED_TESTS);
     if (tests_groups.getLength() == 1) {
       tests_groups = ((Element) tests_groups.item(0)).getElementsByTagName(BATCH);
@@ -315,11 +315,11 @@ public class ScheduleConfig implements Serializable {
     }
 
     //data-collectors
-    c.dataCollectors = new ArrayList<>();
+    c.dataCollectors = new ArrayList<BaseDataCollector>();
     NodeList dataCollectors = node.getElementsByTagName(DATA_COLLECTOR);
     for (int i = 0; i < dataCollectors.getLength(); i++) {
       Element e = (Element) dataCollectors.item(i);
-      c.dataCollectors.add(BaseDataCollector.sParseXml(e));
+      c.dataCollectors.add(BaseDataCollector.parseXml(e));
     }
 
     NodeList list = null;

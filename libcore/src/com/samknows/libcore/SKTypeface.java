@@ -21,12 +21,6 @@ public class SKTypeface {
     } else if (typefacePathInAssets.equals("fonts/roboto_thin.ttf")) {
     } else if (typefacePathInAssets.equals("fonts/roboto_bold.ttf")) {
     } else if (typefacePathInAssets.equals("fonts/roboto_regular.ttf")) {
-    } else if (typefacePathInAssets.equals("fonts/Lato_Medium.ttf")) {
-    } else if (typefacePathInAssets.equals("fonts/Lato_MediumItalic.ttf")) {
-    } else if (typefacePathInAssets.equals("fonts/Lato_Thin.ttf")) {
-    } else if (typefacePathInAssets.equals("fonts/Lato_ThinItalic.ttf")) {
-    } else if (typefacePathInAssets.equals("fonts/Lato_Light.ttf")) {
-    } else if (typefacePathInAssets.equals("fonts/Lato_LightItalic.ttf")) {
     } else if (typefacePathInAssets.equals("typewriter.ttf")) {
 //      Log.d("SKTypefaceUtil", "typewriter.ttf!");
 //      SKLogger.sAssert(false);
@@ -84,6 +78,7 @@ public class SKTypeface {
     } else {
       // Simply a view (e.g. TextView etc. ...) - try setting DIRECTLY.
       setTypefaceForViewIfPossible(view, font);
+      return;
     }
   }
 

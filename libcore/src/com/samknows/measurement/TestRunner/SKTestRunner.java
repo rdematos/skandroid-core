@@ -1,10 +1,13 @@
 package com.samknows.measurement.TestRunner;
 
 import android.os.Handler;
+import android.os.Message;
 
 import com.samknows.libcore.SKLogger;
 import com.samknows.measurement.storage.PassiveMetric;
+import com.samknows.measurement.storage.StorageTestResult;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class SKTestRunner {
@@ -25,15 +28,15 @@ public class SKTestRunner {
     return sRunningTestRunner;
   }
 
-  public static synchronized void sSetRunningTestRunner(SKTestRunner testRunner) {
+  private static synchronized void sSetRunningTestRunner(SKTestRunner testRunner) {
     sRunningTestRunner = testRunner;
   }
 
   // Make base class private!
-  public SKTestRunner() {
+  private SKTestRunner() {
   }
 
-  public SKTestRunner(SKTestRunnerObserver observer) {
+  SKTestRunner(SKTestRunnerObserver observer) {
     // This is ALLOWED to be null!
     mObserver = observer;
 

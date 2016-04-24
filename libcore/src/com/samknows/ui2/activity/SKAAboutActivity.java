@@ -1,6 +1,7 @@
 package com.samknows.ui2.activity;
 
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.view.View;
 import android.widget.TextView;
 

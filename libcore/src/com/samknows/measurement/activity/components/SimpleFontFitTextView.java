@@ -2,6 +2,10 @@ package com.samknows.measurement.activity.components;
 
 import android.content.Context;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 
 import com.lb.auto_fit_textview.AutoResizeTextView;

@@ -1,60 +1,26 @@
 package com.samknows.tests;
 
-import com.samknows.libcore.SKLogger;
 
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class ProxyDetector extends SKAbstractBaseTest implements Runnable {
+public class ProxyDetector extends Test{
 
 	private static final String X_REMOTE_ADDR = "X-Remote-Addr";
 	private static final String HTTP_VIA = "Via";
 	private static final String X_FORWARDED_FOR = "X-Forwarded-For";
 	private static final String X_PROXY_DETECTOR = "X-Proxy-Detector";
 
-  private int port = 80;
-  private String targetIpAddress = "" ;
-  private String seenIp = "NONE";
-  private String target = "";
-  private boolean success = false;
-  private String forwardedForIp = "NONE";
-  private String httpViaIp = "NONE";
-  private String file = "";
-
 	//OUTPUTFORMAT
 	//PROXYDETECTOR;<unix timestamp>;<OK|FAIL>;<target>;<target ip>;<x-remote-addr>;<http-via-ip>;<x-forwarded-ip>
 	private static final String TESTSTRING = "PROXYDETECTOR";
-
-  private ProxyDetector() {
-  }
-
-  public static ProxyDetector sCreateProxyDetector(List<Param> params) {
-    ProxyDetector ret = new ProxyDetector();
-    try {
-      for (Param param : params) {
-        String value = param.getValue();
-        if (param.contains(TestFactory.TARGET)) {
-          ret.setTarget(value);
-        } else if (param.contains( TestFactory.PORT)) {
-          ret.setPort(Integer.parseInt(value));
-        } else if (param.contains( TestFactory.FILE)) {
-          ret.setFile(value);
-        } else {
-          ret = null;
-          break;
-        }
-      }
-    } catch (NumberFormatException nfe) {
-      ret = null;
-    }
-    return ret;
-  }
 
 	private static final String checkHeader(String line, String header){
 		String ret = null;
@@ -66,31 +32,32 @@ public class ProxyDetector extends SKAbstractBaseTest implements Runnable {
 		}
 		return ret;
 	}
+	public ProxyDetector(){
 
-  private Long mTimestamp = SKAbstractBaseTest.sGetUnixTimeStamp();
-	@Override
-	public synchronized void finish() {
-		mTimestamp = SKAbstractBaseTest.sGetUnixTimeStamp();
-		status = STATUS.DONE;
+	}
+	private void output(){
+		out.add(TESTSTRING);
+		out.add(unixTimeStamp()+"");
+		if(success){
+			out.add("OK");
+		}else{
+			out.add("FAIL");
+		}
+		out.add(target);
+		out.add(targetIpAddress);
+		out.add(seenIp);
+		out.add(httpViaIp);
+		out.add(forwardedForIp);
+		setOutput(out.toArray(new String[1]));
 	}
 
-  @Override
-  public long getTimestamp() {
-    return mTimestamp;
-  }
-
-  @Override
-  public JSONObject getJSONResult() {
-    SKLogger.sAssert(false);
-    return new JSONObject();
-	}
-
 	@Override
-	public void runBlockingTestToFinishInThisThread() {
+	public void execute(){
 		try{
+			Socket conn = null;
 			InetAddress addr = InetAddress.getByName(target);
 			targetIpAddress = addr.getHostAddress();
-			Socket conn = new Socket(addr, port);
+			conn = new Socket(addr, port);
 			PrintWriter writerOut = new PrintWriter(conn.getOutputStream(), false);
 			writerOut.print(getHeaderRequest());
 			writerOut.flush();
@@ -106,6 +73,7 @@ public class ProxyDetector extends SKAbstractBaseTest implements Runnable {
 
 			if(returnCode != 200){
 				success = false;
+				output();
 				conn.close();
 				return;
 			}
@@ -136,15 +104,24 @@ public class ProxyDetector extends SKAbstractBaseTest implements Runnable {
 				}
 			}
 			conn.close();
+			output();
 		}catch(Exception e){
 			success = false;
-      SKLogger.sAssert(false);
+			output();
+			e.printStackTrace();
 		}
 	}
 
 	private String getHeaderRequest(){
 		String request = "GET /%s HTTP/1.1\r\nHost: %s \r\nACCEPT: */*\r\n\r\n";
 		return String.format(request, file, target);
+	}
+
+	public boolean isProxyDetected(){
+		if(forwardedForIp.equals("NONE") && httpViaIp.equals("NONE")){
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -154,13 +131,25 @@ public class ProxyDetector extends SKAbstractBaseTest implements Runnable {
 
 	@Override
 	public void run() {
-		setStateToRunning();
-		runBlockingTestToFinishInThisThread();
+		start();
+		execute();
 		finish();
 	}
 
 	@Override
-	public int getProgress0To100() {
+	public String getHumanReadableResult() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("");
+		return null;
+	}
+
+	@Override
+	public boolean isProgressAvailable() {
+		return false;
+	}
+
+	@Override
+	public int getProgress() {		
 		return 0;
 	}
 
@@ -180,22 +169,44 @@ public class ProxyDetector extends SKAbstractBaseTest implements Runnable {
 		return 0;
 	}
 
-  private void setPort(int p){
+	public void setPort(int p){
 		port = p;
 	}
 
-	private void setTarget(String t){
+	public void setTarget(String t){
 		target = t;
 	}
 
-	private void setFile(String f){
+	public void setFile(String f){
 		file = f;
 	}
 
+	ArrayList<String> out = new ArrayList<String>();
+	int port = 80;
+	private String targetIpAddress = "" ;
+	private String seenIp = "NONE";
+	private String target = "";
+	private boolean success = false;
+	private String forwardedForIp = "NONE";
+	private String httpViaIp = "NONE";
+	private String file = "";
 
 	@Override
 	public String getStringID() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+/*	@Override
+	public String getResultsAsString() {
+		return "";
+	}
+	@Override
+	public String getResults(String locale) {
+		return locale;
+	}*/
+	@Override
+	public HashMap<String, String> getResults() {
+		return null;
+	}
+	
 }

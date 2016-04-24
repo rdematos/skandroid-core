@@ -1,0 +1,330 @@
+[
+    {
+        "outputFile": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/res/merged/androidTest/debug/values-be/values-be.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 105,
+                    "endColumn": 149,
+                    "endOffset": 250
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 4,
+                        "startOffset": 105,
+                        "endColumn": 149,
+                        "endOffset": 250
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 255,
+                    "endColumn": 132,
+                    "endOffset": 383
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 3,
+                        "startColumn": 4,
+                        "startOffset": 255,
+                        "endColumn": 132,
+                        "endOffset": 383
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 4,
+                    "startColumn": 4,
+                    "startOffset": 388,
+                    "endColumn": 142,
+                    "endOffset": 526
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 388,
+                        "endColumn": 142,
+                        "endOffset": 526
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 5,
+                    "startColumn": 4,
+                    "startOffset": 531,
+                    "endColumn": 127,
+                    "endOffset": 654
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 5,
+                        "startColumn": 4,
+                        "startOffset": 531,
+                        "endColumn": 127,
+                        "endOffset": 654
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 6,
+                    "startColumn": 4,
+                    "startOffset": 659,
+                    "endColumn": 176,
+                    "endOffset": 831
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 659,
+                        "endColumn": 176,
+                        "endOffset": 831
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 7,
+                    "startColumn": 4,
+                    "startOffset": 836,
+                    "endColumn": 125,
+                    "endOffset": 957
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 7,
+                        "startColumn": 4,
+                        "startOffset": 836,
+                        "endColumn": 125,
+                        "endOffset": 957
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 8,
+                    "startColumn": 4,
+                    "startOffset": 962,
+                    "endColumn": 128,
+                    "endOffset": 1086
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 8,
+                        "startColumn": 4,
+                        "startOffset": 962,
+                        "endColumn": 128,
+                        "endOffset": 1086
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 9,
+                    "startColumn": 4,
+                    "startOffset": 1091,
+                    "endColumn": 193,
+                    "endOffset": 1280
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 9,
+                        "startColumn": 4,
+                        "startOffset": 1091,
+                        "endColumn": 193,
+                        "endOffset": 1280
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 10,
+                    "startColumn": 4,
+                    "startOffset": 1285,
+                    "endColumn": 195,
+                    "endOffset": 1476
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 10,
+                        "startColumn": 4,
+                        "startOffset": 1285,
+                        "endColumn": 195,
+                        "endOffset": 1476
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 11,
+                    "startColumn": 4,
+                    "startOffset": 1481,
+                    "endColumn": 125,
+                    "endOffset": 1602
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 11,
+                        "startColumn": 4,
+                        "startOffset": 1481,
+                        "endColumn": 125,
+                        "endOffset": 1602
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 12,
+                    "startColumn": 4,
+                    "startOffset": 1607,
+                    "endColumn": 143,
+                    "endOffset": 1746
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 12,
+                        "startColumn": 4,
+                        "startOffset": 1607,
+                        "endColumn": 143,
+                        "endOffset": 1746
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 13,
+                    "startColumn": 4,
+                    "startOffset": 1751,
+                    "endColumn": 237,
+                    "endOffset": 1984
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 13,
+                        "startColumn": 4,
+                        "startOffset": 1751,
+                        "endColumn": 237,
+                        "endOffset": 1984
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 14,
+                    "startColumn": 4,
+                    "startOffset": 1989,
+                    "endColumn": 122,
+                    "endOffset": 2107
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 14,
+                        "startColumn": 4,
+                        "startOffset": 1989,
+                        "endColumn": 122,
+                        "endOffset": 2107
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 15,
+                    "startColumn": 4,
+                    "startOffset": 2112,
+                    "endColumn": 108,
+                    "endOffset": 2216
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 15,
+                        "startColumn": 4,
+                        "startOffset": 2112,
+                        "endColumn": 108,
+                        "endOffset": 2216
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 16,
+                    "startColumn": 4,
+                    "startOffset": 2221,
+                    "endColumn": 171,
+                    "endOffset": 2388
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 16,
+                        "startColumn": 4,
+                        "startOffset": 2221,
+                        "endColumn": 171,
+                        "endOffset": 2388
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 17,
+                    "startColumn": 4,
+                    "startOffset": 2393,
+                    "endColumn": 129,
+                    "endOffset": 2518
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 17,
+                        "startColumn": 4,
+                        "startOffset": 2393,
+                        "endColumn": 129,
+                        "endOffset": 2518
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 18,
+                    "startColumn": 4,
+                    "startOffset": 2523,
+                    "endColumn": 105,
+                    "endOffset": 2624
+                },
+                "from": {
+                    "file": "/Users/rdematos/repos/samknows/skandroid-fcc/skandroid-core/google_play_services_lib/build/intermediates/bundles/debug/res/values-be/values-be.xml",
+                    "position": {
+                        "startLine": 18,
+                        "startColumn": 4,
+                        "startOffset": 2523,
+                        "endColumn": 105,
+                        "endOffset": 2624
+                    }
+                }
+            }
+        ]
+    }
+]

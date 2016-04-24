@@ -1,5 +1,6 @@
 package com.samknows.ui2.activity;
 
+import android.R.string;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

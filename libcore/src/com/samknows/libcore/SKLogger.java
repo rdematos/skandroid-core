@@ -169,10 +169,7 @@ public class SKLogger {
   public static void sAssert(String message, final boolean check) {
     if (check == false) {
 
-      if ( (SKApplication.getAppInstance() == null && BuildConfig.DEBUG) ||
-           (OtherUtils.isDebuggable(SKApplication.getAppInstance().getApplicationContext()))
-         )
-      {
+      if (OtherUtils.isDebuggable(SKApplication.getAppInstance().getApplicationContext())) {
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
         String where = "?";
         if (elements.length >= 4) {
@@ -190,10 +187,7 @@ public class SKLogger {
   public static void sAssert(final boolean check) {
     if (check == false) {
 
-      if ( (SKApplication.getAppInstance() == null && BuildConfig.DEBUG) ||
-           (OtherUtils.isDebuggable(SKApplication.getAppInstance().getApplicationContext()))
-         )
-      {
+      if (OtherUtils.isDebuggable(SKApplication.getAppInstance().getApplicationContext())) {
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
         String where = "?";
         if (elements.length >= 4) {

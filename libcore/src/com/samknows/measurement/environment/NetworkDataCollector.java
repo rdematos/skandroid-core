@@ -6,16 +6,12 @@ import com.samknows.measurement.SKApplication;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.os.Looper;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
-public class NetworkDataCollector extends EnvBaseDataCollector {
+public class NetworkDataCollector extends BaseDataCollector{
 
-  public NetworkDataCollector(Context context) {
+	public NetworkDataCollector(Context context) {
 		super(context);
 	}
 	
@@ -34,36 +30,21 @@ public class NetworkDataCollector extends EnvBaseDataCollector {
 			return null;
 		}
 	}
-
-  TelephonyManager mTelManager;
+	
+	public static boolean sGetIsConnected() {
+		
+		NetworkInfo activeNetworkInfo = sGetNetworkInfo();
+		if (activeNetworkInfo == null) {
+			SKLogger.sAssert(NetworkDataCollector.class, false);
+			return false;
+		}
+		
+		return activeNetworkInfo.isConnected();
+	}
+	
+	TelephonyManager mTelManager;
 	ConnectivityManager mConnManager;
-	NetworkDataListener mNetworkDataListener;
-
-  public static String sCurrentWifiSSIDNullIfNotFound() {
-    Context context = SKApplication.getAppInstance().getApplicationContext();
-
-    //ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-    WifiManager wifiManager=(WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-    //if (connManager != null && wifiManager != null) {
-    if (wifiManager != null) {
-      //NetworkInfo netInfo = connManager.getActiveNetworkInfo();
-      WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-      //if (netInfo != null && wifiInfo != null) {
-      if (wifiInfo != null) {
-        String theSSID = wifiInfo.getSSID();
-        if (theSSID == null) {
-					// e.g. if we're on mobile!
-          // SKLogger.sAssert(false);
-        } else {
-          String wifiInfoSSID = wifiInfo.getSSID().replace("\"", "");
-          //wifiInfoSSID = "A test network";
-          return wifiInfoSSID;
-        }
-      }
-    }
-
-    return null;
-  }
+	NetworkDataListener mNetworkDataListener; 
 	
 	private static NetworkData extractData(TelephonyManager telManager, ConnectivityManager connManager){
 		NetworkData ret = new NetworkData();
@@ -90,33 +71,10 @@ public class NetworkDataCollector extends EnvBaseDataCollector {
 		ret.isRoaming = telManager.isNetworkRoaming();
 		ret.networkType = telManager.getNetworkType();
 
-    ret.wifiSSID = sCurrentWifiSSIDNullIfNotFound();
-
-		sQueryWlanCarrier(ret);
-
 		return ret;
 	}
-
-	private static void sQueryWlanCarrier(NetworkData ret) {
-		if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-      // Cannot do this in the main thread - otherwise, we get an exception!
-      //SKLogger.sAssert(false);
-    } else {
-      final NetworkData finalRet = ret;
-
-      QueryWlanCarrier myQuery = new QueryWlanCarrier() {
-
-        @Override
-        public void doHandleGotWlanCarrier(String wlanCarrier) {
-          Log.d("MPC", "NetorkDataCollector got wlanCarrier=" + wlanCarrier);
-          finalRet.wlanCarrier = wlanCarrier;
-        }
-      };
-      myQuery.doPerformQuery();
-    }
-	}
-
-  void collectData(){
+	
+	void collectData(){
 		addData(extractData(mTelManager, mConnManager));
 	}
 	

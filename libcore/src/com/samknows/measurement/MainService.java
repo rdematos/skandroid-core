@@ -4,7 +4,9 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.PowerManager;
 import android.util.Log;
 
@@ -14,7 +16,8 @@ import com.samknows.measurement.TestRunner.SKTestRunner;
 import com.samknows.measurement.environment.TrafficStatsCollector;
 import com.samknows.measurement.schedule.ScheduleConfig;
 import com.samknows.measurement.TestRunner.BackgroundTestRunner;
-import com.samknows.measurement.statemachine.state.StateEnum;
+import com.samknows.measurement.TestRunner.ContinuousTestRunner;
+import com.samknows.measurement.statemachine.State;
 import com.samknows.measurement.util.OtherUtils;
 
 public class MainService extends IntentService {
@@ -109,9 +112,9 @@ public class MainService extends IntentService {
 					Log.d(TAG, "+++++DEBUG+++++ Service disabled(manual), exiting.");
 			}
 		} catch (Throwable th) {
-			//if an error happened we want to restart from StateEnum.NONE
+			//if an error happened we want to restart from State.NONE
       SKLogger.sAssert(false);
-			appSettings.saveState(StateEnum.NONE);
+			appSettings.saveState(State.NONE);
 			Log.d(TAG, "+++++DEBUG+++++ caught throwable, th=" + th.toString());
 			Log.d(TAG, "+++++DEBUG+++++ call OtherUtils.rescheduleWakeup");
 			OtherUtils.rescheduleWakeup(this, appSettings.rescheduleTime);

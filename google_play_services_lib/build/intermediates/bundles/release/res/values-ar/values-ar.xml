@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string msgid="8472377992819116328" name="auth_client_availability_notification_title">"تثبيت/تحديث/تمكين خدمات Google Play"</string>
+    <string msgid="3635065018897986478" name="auth_client_play_services_err_notification_msg">"خطأ في خدمات Google Play"</string>
+    <string msgid="6304135633531965756" name="auth_client_requested_by_msg">"تم الطلب عن طريق <ns1:g id="APP_NAME">%1$s</ns1:g>"</string>
+    <string msgid="4181637455539816337" name="common_google_play_services_enable_button">"تمكين خدمات Google Play"</string>
+    <string msgid="7627896071867667758" name="common_google_play_services_enable_text">"لن يعمل هذا التطبيق ما لم يتم تمكين خدمات Google Play."</string>
+    <string msgid="529078775174559253" name="common_google_play_services_enable_title">"تمكين خدمات Google Play"</string>
+    <string msgid="8515591849428043265" name="common_google_play_services_install_button">"الحصول على خدمات Google Play"</string>
+    <string msgid="8685301130651051380" name="common_google_play_services_install_text_phone">"لن يتم تشغيل هذا التطبيق بدون خدمات Google Play، والتي لا تتوفر في هاتفك."</string>
+    <string msgid="1589957570365247855" name="common_google_play_services_install_text_tablet">"لن يتم تشغيل هذا التطبيق بدون خدمات Google Play، والتي لا تتوفر في جهازك اللوحي."</string>
+    <string msgid="26645092511305524" name="common_google_play_services_install_title">"الحصول على خدمات Google Play"</string>
+    <string msgid="4762332809710093730" name="common_google_play_services_unknown_issue">"حدثت مشكلة غير معروفة في خدمات Google Play."</string>
+    <string msgid="3542578567569488671" name="common_google_play_services_unsupported_text">"خدمات Google Play التي تستجيب لها بعض تطبيقاتك لا تعمل على جهازك. يُرجى الاتصال بجهة التصنيع للحصول على المساعدة."</string>
+    <string msgid="6334768798839376943" name="common_google_play_services_unsupported_title">"خدمات Google Play"</string>
+    <string msgid="8932944190611227642" name="common_google_play_services_update_button">"تحديث"</string>
+    <string msgid="448354684997260580" name="common_google_play_services_update_text">"لن يتم تشغيل هذا التطبيق ما لم تحدِّث خدمات Google Play."</string>
+    <string msgid="6006316683626838685" name="common_google_play_services_update_title">"تحديث خدمات Google Play"</string>
+    <string msgid="2429381841831957106" name="common_signin_button_text_long">"تسجيل الدخول باستخدام Google"</string>
+</resources>

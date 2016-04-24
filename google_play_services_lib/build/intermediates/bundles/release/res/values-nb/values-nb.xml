@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string msgid="8472377992819116328" name="auth_client_availability_notification_title">"Du må installere, oppdatere eller aktivere Google Play Tjenester"</string>
+    <string msgid="3635065018897986478" name="auth_client_play_services_err_notification_msg">"Google Play Tjenester-feil"</string>
+    <string msgid="6304135633531965756" name="auth_client_requested_by_msg">"Forespurt av <ns1:g id="APP_NAME">%1$s</ns1:g>"</string>
+    <string msgid="4181637455539816337" name="common_google_play_services_enable_button">"Aktiver Google Play Tjenester"</string>
+    <string msgid="7627896071867667758" name="common_google_play_services_enable_text">"Denne appen fungerer ikke med mindre du aktiverer Google Play Tjenester."</string>
+    <string msgid="529078775174559253" name="common_google_play_services_enable_title">"Aktiver Google Play Tjenester"</string>
+    <string msgid="8515591849428043265" name="common_google_play_services_install_button">"Installer Google Play Tjenester"</string>
+    <string msgid="8685301130651051380" name="common_google_play_services_install_text_phone">"Denne appen kan ikke kjøres uten Google Play Tjenester, som ikke er installert på telefonen din."</string>
+    <string msgid="1589957570365247855" name="common_google_play_services_install_text_tablet">"Denne appen kan ikke kjøres uten Google Play Tjenester, som ikke er installert på nettbrettet ditt."</string>
+    <string msgid="26645092511305524" name="common_google_play_services_install_title">"Installer Google Play Tjenester"</string>
+    <string msgid="4762332809710093730" name="common_google_play_services_unknown_issue">"Det oppsto et ukjent problem med Google Play Tjenester."</string>
+    <string msgid="3542578567569488671" name="common_google_play_services_unsupported_text">"Google Play Tjenester, som noen av appene er avhengige av, støttes ikke av enheten. Ta kontakt med produsenten for å få hjelp."</string>
+    <string msgid="6334768798839376943" name="common_google_play_services_unsupported_title">"Google Play Tjenester"</string>
+    <string msgid="8932944190611227642" name="common_google_play_services_update_button">"Oppdater"</string>
+    <string msgid="448354684997260580" name="common_google_play_services_update_text">"Denne appen kan ikke kjøres før du oppdaterer Google Play Tjenester."</string>
+    <string msgid="6006316683626838685" name="common_google_play_services_update_title">"Oppdater Google Play Tjenester"</string>
+    <string msgid="2429381841831957106" name="common_signin_button_text_long">"Logg inn med Google"</string>
+</resources>

@@ -9,18 +9,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.telephony.NeighboringCellInfo;
 import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.widget.FrameLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.samknows.libcore.SKLogger;
@@ -40,7 +46,6 @@ import com.samknows.measurement.environment.NetworkData;
 import com.samknows.measurement.environment.NetworkDataCollector;
 import com.samknows.measurement.environment.PhoneIdentityData;
 import com.samknows.measurement.environment.PhoneIdentityDataCollector;
-import com.samknows.measurement.environment.Reachability;
 import com.samknows.measurement.schedule.ScheduleConfig;
 import com.samknows.measurement.storage.DBHelper;
 import com.samknows.measurement.util.DCSConvertorUtil;
@@ -77,7 +82,7 @@ public class FragmentSettings extends Fragment {
 
   private boolean checkIfIsConnectedAndIfNotShowAnAlert() {
 
-    if (Reachability.sGetIsConnected() == true) {
+    if (NetworkDataCollector.sGetIsConnected() == true) {
       return true;
     }
 
@@ -215,14 +220,12 @@ public class FragmentSettings extends Fragment {
     try {
       locationServicesTypeButtonText = (FontFitTextView) view.findViewById(R.id.settings_location_services_type_text);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
 
     ButtonWithRightArrow locationServicesTypeButton = null;
     try {
       locationServicesTypeButton = (ButtonWithRightArrow) view.findViewById(R.id.settings_location_services_type);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
 
     String theValue = SK2AppSettings.getSK2AppSettingsInstance().getLocationTypeAsString();
@@ -303,7 +306,6 @@ public class FragmentSettings extends Fragment {
     try {
       ((TextView) view.findViewById(R.id.tv_service_activated_value)).setText(value);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
 
     if (SKApplication.getAppInstance().getIsBackgroundTestingEnabledInUserPreferences()) {
@@ -315,13 +317,11 @@ public class FragmentSettings extends Fragment {
     try {
       ((TextView) view.findViewById(R.id.tv_service_autotesting_value)).setText(value);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
 
 //    try {
 //      //((TextView) view.findViewById(R.id.tv_service_status_value)).setText(getString(SK2AppSettings.getSK2AppSettingsInstance().getState().sId));
 //    } catch (NoSuchFieldError e) {
-//      SKLogger.sAssert(false);
 //    }
 
     ScheduleConfig config = CachingStorage.getInstance().loadScheduleConfig();
@@ -330,7 +330,6 @@ public class FragmentSettings extends Fragment {
     try {
       ((TextView) view.findViewById(R.id.schedule_version)).setText(schedule_version);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
 
     String nextTestScheduled = "";
@@ -347,23 +346,17 @@ public class FragmentSettings extends Fragment {
     try {
       ((TextView) view.findViewById(R.id.tv_scheduledFor_value)).setText(nextTestScheduled);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
 
     if (SKApplication.getAppInstance().getIsBackgroundProcessingEnabledInTheSchedule() == false) {
       // Background processing disabled in the schedule!
       try {
         view.findViewById(R.id.autotesting_row).setVisibility(View.GONE);
-
-        // Also hide all the containing system info block!
-        view.findViewById(R.id.system_info_tablerow).setVisibility(View.GONE);
       } catch (NoSuchFieldError e) {
-        //SKLogger.sAssert(false);
       }
       try {
         view.findViewById(R.id.next_test_scheduled_for_row).setVisibility(View.GONE);
       } catch (NoSuchFieldError e) {
-        //SKLogger.sAssert(false);
       }
     }
 
@@ -372,17 +365,14 @@ public class FragmentSettings extends Fragment {
       try {
         ((TextView) view.findViewById(R.id.tv_imei_value)).setText(phoneData.imei + "");
       } catch (NoSuchFieldError e) {
-        //SKLogger.sAssert(false);
       }
       try {
         ((TextView) view.findViewById(R.id.tv_imsi_value)).setText(phoneData.imsi + "");
       } catch (NoSuchFieldError e) {
-        //SKLogger.sAssert(false);
       }
       try {
         ((TextView) view.findViewById(R.id.tv_unitId_value)).setText(SK2AppSettings.getInstance().getUnitId());
       } catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
       }
     }
 
@@ -390,13 +380,11 @@ public class FragmentSettings extends Fragment {
     try {
       ((TextView) view.findViewById(R.id.tv_phone_value)).setText(value);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
     value = phoneData.osType + " v" + phoneData.osVersion;
     try {
       ((TextView) view.findViewById(R.id.tv_os_value)).setText(value);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
 
     NetworkData networkData = new NetworkDataCollector(getActivity()).collect();
@@ -404,19 +392,16 @@ public class FragmentSettings extends Fragment {
     try {
       ((TextView) view.findViewById(R.id.tv_phone_type_value)).setText(value);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
     value = getString(DCSConvertorUtil.networkTypeToStringId(networkData.networkType));
     try {
       ((TextView) view.findViewById(R.id.tv_network_type_value)).setText(value);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
     value = networkData.networkOperatorCode + "/" + networkData.networkOperatorName;
     try {
       ((TextView) view.findViewById(R.id.tv_network_operator_value)).setText(value);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
 
     if (networkData.isRoaming) {
@@ -427,7 +412,6 @@ public class FragmentSettings extends Fragment {
     try {
       ((TextView) view.findViewById(R.id.tv_roaming_value)).setText(value);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
 
     Location loc1 = ((LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE)).getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -442,27 +426,22 @@ public class FragmentSettings extends Fragment {
       try {
         ((TextView) view.findViewById(R.id.tv_loc_date_value)).setText(new SKDateFormat(getActivity()).UITime(loc.getTime()));
       } catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
       }
       try {
         ((TextView) view.findViewById(R.id.tv_loc_provider_value)).setText(loc.getProvider());
       } catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
       }
       try {
         ((TextView) view.findViewById(R.id.tv_loc_long_value)).setText(String.format("%1.5f", loc.getLongitude()));
       } catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
       }
       try {
         ((TextView) view.findViewById(R.id.tv_loc_lat_value)).setText(String.format("%1.5f", loc.getLatitude()));
       } catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
       }
       try {
         ((TextView) view.findViewById(R.id.tv_loc_acc_value)).setText(loc.getAccuracy() + " m");
       } catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
       }
     }
 
@@ -476,23 +455,19 @@ public class FragmentSettings extends Fragment {
       try {
         ((TextView) view.findViewById(R.id.tv_cell_tower_type_value)).setText("GSM");
       } catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
       }
       try {
         ((TextView) view.findViewById(R.id.tv_cell_id_value)).setText("" + gsmLocation.getCid());
       } catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
       }
       try {
         ((TextView) view.findViewById(R.id.tv_area_code_value)).setText("" + gsmLocation.getLac());
       } catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
       }
     } else if (cellData.getCellLocation() instanceof CdmaCellLocation) {
       try {
         ((TextView) view.findViewById(R.id.tv_cell_tower_type_value)).setText("CDMA");
       } catch (NoSuchFieldError e) {
-        SKLogger.sAssert(false);
       }
       //			CdmaCellLocation cdmaLocation = (CdmaCellLocation) cellLocation;
       //			builder.append(CDMA);
@@ -517,24 +492,19 @@ public class FragmentSettings extends Fragment {
     try {
       ((TextView) view.findViewById(R.id.tv_signal_value)).setText(value);
     } catch (NoSuchFieldError e) {
-      //SKLogger.sAssert(false);
     }
-
-    /* WE NO LONGER DO THIS! ... as it just pumps unwanted lines at the bottom of the screen...
     // Note: neighbors might be NULL...
     if (cellData.getNeighbors() != null) {
       for (NeighboringCellInfo info : cellData.getNeighbors()) {
         appendNeighborCellInfo(info);
       }
     }
-    */
 
     View contentView = view; // view.findViewById(android.R.id.content);
     SKTypeface.sChangeChildrenToDefaultFontTypeface(contentView);
   }
 
 
-  /*
   public void appendNeighborCellInfo(NeighboringCellInfo data) {
 
     View view = getView();
@@ -544,7 +514,6 @@ public class FragmentSettings extends Fragment {
         return;
       }
     } catch (NoSuchFieldError e) {
-      SKLogger.sAssert(false);
       return;
     }
 
@@ -689,6 +658,5 @@ public class FragmentSettings extends Fragment {
     ((TableLayout) view.findViewById(R.id.info_table)).addView(tr, params);
     tr.setLayoutParams(params);
   }
-  */
 
 }

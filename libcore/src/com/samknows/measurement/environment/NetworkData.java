@@ -34,9 +34,7 @@ public class NetworkData implements DCSData{
 	public static final String JSON_NETWORK_OPERATOR_NAME = "network_operator_name";
 	public static final String JSON_SIM_OPERATOR_CODE = "sim_operator_code";
 	public static final String JSON_SIM_OPERATOR_NAME = "sim_operator_name";
-	public static final String JSON_WIFI_SSID = "wifi_ssid";
-  public static final String JSON_WLAN_CARRIER = "wlan_carrier";
-
+	
 	
 	/** time in milis */
 	public long time;
@@ -55,12 +53,9 @@ public class NetworkData implements DCSData{
 	//sim operator
 	public String simOperatorCode;
 	public String simOperatorName;
-
-	public String wifiSSID; // e.g. "SK1" ... might be null!
-  public String wlanCarrier; // e.g. "SK1" ... might be null!
-
+	
 	public List<String> convert() {
-		List<String> list = new ArrayList<>();
+		List<String> list = new ArrayList<String>();
 		
 		DCSStringBuilder builder = new DCSStringBuilder();
 		builder.append(ID_PHONE);
@@ -91,12 +86,6 @@ public class NetworkData implements DCSData{
 		builder.append(time/1000);
 		builder.append(networkOperatorCode);
 		builder.append(networkOperatorName);
-    if (wifiSSID != null) {
-      builder.append(wifiSSID);
-    }
-    if (wlanCarrier != null) {
-      builder.append(wlanCarrier);
-    }
 		list.add(builder.build());
 		
 		builder = new DCSStringBuilder();
@@ -105,14 +94,14 @@ public class NetworkData implements DCSData{
 		builder.append(simOperatorCode);
 		builder.append(simOperatorName);
 		list.add(builder.build());
-
+		
 		return list;
 	}
 
 	//ret.add(new PassiveMetric());
 	@Override
 	public List<JSONObject> getPassiveMetric() {
-		List<JSONObject> ret = new ArrayList<>();
+		List<JSONObject> ret = new ArrayList<JSONObject>();
 		ret.add(PassiveMetric.create(PassiveMetric.METRIC_TYPE.PHONETYPE, time, DCSConvertorUtil.convertPhoneType(phoneType)));
 		ret.add(PassiveMetric.create(PassiveMetric.METRIC_TYPE.NETWORKTYPE, time, DCSConvertorUtil.convertNetworkType(networkType)));
 		if(activeNetworkInfo != null){
@@ -123,19 +112,13 @@ public class NetworkData implements DCSData{
 		ret.add(PassiveMetric.create(PassiveMetric.METRIC_TYPE.NETWORKOPERATORNAME, time, networkOperatorName));
 		ret.add(PassiveMetric.create(PassiveMetric.METRIC_TYPE.SIMOPERATORCODE, time, simOperatorCode));
 		ret.add(PassiveMetric.create(PassiveMetric.METRIC_TYPE.SIMOPERATORNAME, time, simOperatorName));
-    if (wifiSSID != null) {
-      ret.add(PassiveMetric.create(PassiveMetric.METRIC_TYPE.WIFISSID, time, wifiSSID));
-    }
-    if (wlanCarrier != null) {
-      ret.add(PassiveMetric.create(PassiveMetric.METRIC_TYPE.WLANCARRIER, time, wlanCarrier));
-    }
-
+	
 		return ret;
 	}
 
 	@Override
 	public List<JSONObject> convertToJSON() {
-		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> ret = new HashMap<String, Object>();
 		ret.put(JSON_TYPE, JSON_TYPE_VALUE);
 		ret.put(JSON_PHONE_TYPE_CODE, phoneType);
 		ret.put(JSON_PHONE_TYPE, DCSConvertorUtil.convertPhoneType(phoneType));
@@ -154,14 +137,8 @@ public class NetworkData implements DCSData{
 		ret.put(JSON_NETWORK_OPERATOR_NAME, networkOperatorName);
 		ret.put(JSON_SIM_OPERATOR_CODE, simOperatorCode);
 		ret.put(JSON_SIM_OPERATOR_NAME, simOperatorName);
-    if (wifiSSID != null) {
-      ret.put(JSON_WIFI_SSID, wifiSSID);
-    }
-    if (wlanCarrier != null) {
-      ret.put(JSON_WLAN_CARRIER, wlanCarrier);
-    }
-
-		List<JSONObject> l = new ArrayList<>();
+	
+		List<JSONObject> l = new ArrayList<JSONObject>();
 		l.add(new JSONObject(ret));
 		return l;
 	}

@@ -3,11 +3,13 @@ package com.samknows.measurement.statemachine.state;
 import android.content.Context;
 import android.util.Log;
 
+import com.samknows.libcore.SKLogger;
 import com.samknows.measurement.SK2AppSettings;
+import com.samknows.measurement.MainService;
 import com.samknows.measurement.SKApplication;
-import com.samknows.measurement.environment.Reachability;
 import com.samknows.measurement.net.SubmitTestResultsAnonymousAction;
 import com.samknows.measurement.statemachine.StateResponseCode;
+import com.samknows.measurement.util.OtherUtils;
 
 public class SubmitResultsAnonymousState extends BaseState{
   static final String TAG = "SubmitResultsAnonymousS";
@@ -20,7 +22,7 @@ public class SubmitResultsAnonymousState extends BaseState{
 	public StateResponseCode executeState(){
 		if ( (SK2AppSettings.getInstance().isDataCapReached() == true) &&
 		  	 (SKApplication.getAppInstance().getIsDataCapEnabled() == true) &&
-		  	 (Reachability.sGetIsNetworkWiFi() == false)
+		  	 (OtherUtils.isWifi(ctx) == false)
 			 )
     {
 			Log.d(TAG, "Results have not been submitted because the data cap is reached");

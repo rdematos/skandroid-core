@@ -2,7 +2,6 @@ package com.samknows.ska.activity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,7 +28,7 @@ import com.samknows.measurement.TestRunner.SKTestRunner;
 import com.samknows.measurement.activity.BaseLogoutActivity;
 import com.samknows.measurement.activity.components.FontFitTextView;
 import com.samknows.measurement.activity.components.ProgressWheel;
-import com.samknows.measurement.environment.Reachability;
+import com.samknows.measurement.environment.NetworkDataCollector;
 import com.samknows.measurement.schedule.ScheduleConfig;
 import com.samknows.measurement.storage.StorageTestResult.*;
 import com.samknows.measurement.schedule.TestDescription.*;
@@ -151,7 +150,7 @@ public class SKARunningTestActivity extends BaseLogoutActivity {
 
       String type = message_json.getString(StorageTestResult.JSON_TYPE_ID);
 
-      if (type.equals("test")) {
+      if (type == "test") {
         testnameAsInt = message_json .getInt(StorageTestResult.JSON_TESTNUMBER);
         status_complete = message_json
             .getInt(StorageTestResult.JSON_STATUS_COMPLETE);
@@ -264,7 +263,7 @@ public class SKARunningTestActivity extends BaseLogoutActivity {
         }
       }
 
-      if (type.equals("passivemetric")) {
+      if (type == "passivemetric") {
         metric = message_json.getInt("metric");
         String metricString = message_json.getString("metricString");
         value = message_json.getString("value");
@@ -519,7 +518,28 @@ public class SKARunningTestActivity extends BaseLogoutActivity {
     }
   }
 
-  @Override
+	private boolean checkIfIsConnectedAndIfNotShowAnAlertThenFinish() {
+		
+		if (NetworkDataCollector.sGetIsConnected() == true) {
+			return true;
+		}
+	
+		// We're not connected - show an alert - if possible - and return false!
+		if (!isFinishing()) {
+			new AlertDialog.Builder(this)
+			.setMessage(R.string.Offline_message)
+			.setPositiveButton(R.string.ok_dialog, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					SKARunningTestActivity.this.finish();
+					overridePendingTransition(0, 0);
+				}
+			}).show();
+		}
+		
+		return false;
+	}
+
+	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
@@ -595,7 +615,7 @@ public class SKARunningTestActivity extends BaseLogoutActivity {
       public void OnChangedStateTo(SKTestRunner.TestRunnerState state) {
 
         if (state == SKTestRunner.TestRunnerState.STOPPED) {
-          if (Reachability.sCheckIfIsConnectedAndIfNotShowAnAlertThenFinish(SKARunningTestActivity.this, true) == false) {
+          if (SKARunningTestActivity.this.checkIfIsConnectedAndIfNotShowAnAlertThenFinish() == false) {
             // The alert that is shown, handles the "finish()"
           } else {
             SKARunningTestActivity.this.finish();

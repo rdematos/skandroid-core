@@ -2,6 +2,7 @@ package com.samknows.measurement.statemachine.state;
 
 import android.content.Context;
 
+import com.samknows.measurement.MainService;
 import com.samknows.measurement.statemachine.StateResponseCode;
 
 public class BaseState {
